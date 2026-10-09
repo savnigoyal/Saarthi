@@ -190,7 +190,7 @@ export default function App() {
 
             <p className="score-summary">Safety estimate based on mapped lighting, nearby activity, police proximity, safe havens, and available incident data.</p>
             
-            <div className="flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
+            <div className="score-duplicate-meta flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-base text-primary">route</span> {selectedRoute.distance}
               </span>
@@ -211,7 +211,7 @@ export default function App() {
             <div className="why-note"><span className="material-symbols-outlined">info</span>Use this estimate as guidance, not a safety guarantee.</div>
           </details>
 
-          <div className="flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
+          <div className="factor-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">tune</span>
@@ -228,7 +228,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
+          <div className="segment-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">alt_route</span>
@@ -268,7 +268,7 @@ export default function App() {
           </div>
           
           {selectedRoute.review && (
-            <div className="flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
+            <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
               <div className="flex flex-col min-w-0">
                 <span className="font-label-md text-label-md font-bold text-on-surface">Walked by {selectedRoute.review.user} {selectedRoute.review.timeAgo}</span>

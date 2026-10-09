@@ -129,7 +129,7 @@ body { background: #080d19; }
 .score-card { padding: 12px 12px 13px; background: #171f33; }
 .score-ring { width: 144px; height: 144px; margin-block: 0 4px; }
 .score-card .inline-flex { margin-top: 4px; padding: 5px 9px; font-size: 9px; }
-.score-card > .flex.items-center.gap-space-sm { margin-top: 7px; font-size: 9px; }
+.score-duplicate-meta { display: none !important; }
 .score-summary { max-width: 330px; margin: 10px auto 0; color: #c1ccdc; font-size: 10px; line-height: 15px; }
 .app-content > .flex.flex-col.bg-surface-container { padding: 12px; gap: 10px; background: #171f33; }
 .app-content > .flex.flex-col.bg-surface-container h3 { font-size: 13px; line-height: 17px; }
@@ -164,6 +164,55 @@ body { background: #080d19; }
 .app-shell > .fixed.bottom-0 { padding: 9px 12px calc(9px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(180deg, #0b132600, #0b1326ee 25%); border: 0; }
 .app-shell > .fixed.bottom-0 button { height: 44px; font-size: 11px; text-transform: none; }
 @media (min-width: 600px) {
-  .app-shell { margin-block: 20px; min-height: calc(100dvh - 40px); border-radius: 18px; overflow: clip; }
-  .app-content { padding-inline: 16px; }
+  .app-shell { width: min(100% - 40px, 820px); max-width: none; margin-block: 20px; min-height: calc(100dvh - 40px); border: 1px solid #252d40; border-radius: 18px; overflow: clip; }
+  .app-content { width: 100%; max-width: none; padding: 18px 20px 110px; gap: 16px; }
+  .route-intro { padding: 16px 18px; }
+  .route-intro h2 { font-size: 20px; line-height: 26px; }
+  .route-intro .eyebrow { font-size: 10px; }
+  .route-meta { font-size: 11px; gap: 8px 18px; }
+  .score-ring { width: 168px; height: 168px; }
+  .score-card { justify-content: center; padding: 20px; }
+  .score-summary { font-size: 11px; line-height: 17px; }
+  .app-content > .flex.flex-col.bg-surface-container { padding: 16px; gap: 12px; }
+  .app-content > .flex.flex-col.bg-surface-container h3 { font-size: 15px; line-height: 20px; }
+  .app-content > .flex.flex-col.bg-surface-container .rounded-lg { padding: 9px 10px; }
+  .app-content > .flex.flex-col.bg-surface-container .rounded-lg .text-label-md,
+  .app-content > .flex.flex-col.bg-surface-container .relative.flex.flex-col.gap-space-md .rounded-xl.p-space-sm .text-label-md { font-size: 11px; line-height: 15px; }
+  .app-content > .flex.flex-col.bg-surface-container .relative.flex.flex-col.gap-space-md p { font-size: 10px; line-height: 15px; }
+  .why-score { padding-inline: 14px; }
+  .why-score summary { min-height: 58px; }
+  .why-score summary strong { font-size: 13px; }
+  .why-score summary small, .why-score p, .why-note { font-size: 10px; }
+  .app-shell > .fixed.bottom-0 { left: 50%; width: min(100% - 40px, 820px); transform: translateX(-50%); padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .app-shell > .fixed.bottom-0 button { width: 100%; max-width: none; height: 48px; font-size: 13px; }
+}
+
+@media (min-width: 700px) {
+  .app-content { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); align-content: start; align-items: start; }
+  .route-intro, .segment-section, .review-card { grid-column: 1 / -1; }
+  .score-card, .why-score { grid-column: 1; }
+  .factor-section { grid-column: 2; grid-row: 2 / span 2; }
+  .segment-section { grid-row: 4; }
+  .review-card { grid-row: 5; }
+}
+
+@media (min-width: 1024px) {
+  .app-shell { width: min(100% - 64px, 1120px); margin-block: 24px; min-height: calc(100dvh - 48px); }
+  .app-shell > header > div:first-child { height: 64px; padding-inline: 24px; }
+  .app-shell > header > div:nth-child(2) { padding-inline: 24px; }
+  .app-content { padding: 22px 24px 112px; gap: 18px; }
+  .route-intro { padding: 18px 20px; }
+  .route-intro h2 { font-size: 23px; line-height: 30px; }
+  .score-card { min-height: 330px; }
+  .score-ring { width: 190px; height: 190px; }
+  .factor-section, .segment-section { padding: 18px; }
+  .app-shell > .fixed.bottom-0 { width: min(100% - 64px, 1120px); padding-inline: 24px; }
+}
+
+@media (max-width: 380px) {
+  .app-content { padding-inline: 9px; gap: 9px; }
+  .route-meta { gap: 4px 8px; font-size: 8px; }
+  .route-intro h2 { font-size: 14px; }
+  .score-ring { width: 132px; height: 132px; }
+  .score-card .inline-flex { max-width: 100%; text-align: center; }
 }
