@@ -91,7 +91,7 @@
 
 /* Desktop uses the available viewport as a two-column dashboard. */
 @media (min-width: 900px) {
-  .guardian-shell { width: min(calc(100% - 64px), 1180px); max-width: none; min-height: calc(100dvh - 64px); margin: 32px auto; padding: 0 0 24px; border: 1px solid #252d40; border-radius: 22px; overflow: visible; box-shadow: 0 20px 70px #0005; }
+  .guardian-shell { width: min(calc(100% - 64px), 1180px); max-width: none; min-height: calc(100dvh - 64px); margin: 32px auto; padding: 0 0 150px; border: 1px solid #252d40; border-radius: 22px; overflow: visible; box-shadow: 0 20px 70px #0005; }
   .guardian-header { height: 72px; padding: 0 28px; border-radius: 22px 22px 0 0; }
   .guardian-header h1 { font-size: 20px; }
   .guardian-content { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 0 28px; padding: 22px 28px 12px; }
@@ -114,17 +114,17 @@
   .dispatch-card { padding: 16px; }
   .dispatch-card p { font-size: 13px; line-height: 20px; }
   .journey-status,.tracking-id,.end-journey,.arrived-state { margin-top: 12px; }
-  .guardian-footer { position: static; width: auto; max-width: 620px; margin: 8px auto 0; padding: 12px 28px 0; transform: none; background: none; }
+  .guardian-footer { position: fixed; z-index: 10; left: 50%; bottom: 0; width: min(calc(100% - 64px), 1180px); max-width: none; box-sizing: border-box; margin: 0; padding: 14px 28px calc(14px + env(safe-area-inset-bottom,0px)); transform: translateX(-50%); border-radius: 0 0 22px 22px; background: linear-gradient(180deg,#0b132600,#0b1326f5 25%); }
   .start-journey { min-height: 56px; font-size: 16px; }
   .guardian-footer p { justify-content: center; font-size: 10px; }
 }
 
 /* Tablet gets a wider canvas while keeping a single-column reading flow. */
 @media (min-width: 600px) and (max-width: 899px) {
-  .guardian-shell { width: min(calc(100% - 40px), 820px); max-width: none; min-height: calc(100dvh - 40px); margin: 20px auto; padding-bottom: 24px; border: 1px solid #252d40; border-radius: 18px; overflow: visible; box-shadow: 0 14px 44px #0005; }
+  .guardian-shell { width: min(calc(100% - 40px), 820px); max-width: none; min-height: calc(100dvh - 40px); margin: 20px auto; padding-bottom: 130px; border: 1px solid #252d40; border-radius: 18px; overflow: visible; box-shadow: 0 14px 44px #0005; }
   .guardian-header { height: 64px; padding-inline: 22px; }
   .guardian-content { padding: 20px 22px 12px; }
-  .guardian-footer { position: static; width: auto; max-width: 620px; margin: 8px auto 0; padding: 12px 22px 0; transform: none; background: none; }
+  .guardian-footer { position: fixed; z-index: 10; left: 50%; bottom: 0; width: min(calc(100% - 40px), 820px); max-width: none; box-sizing: border-box; margin: 0; padding: 12px 22px calc(12px + env(safe-area-inset-bottom,0px)); transform: translateX(-50%); border-radius: 0 0 18px 18px; background: linear-gradient(180deg,#0b132600,#0b1326f5 25%); }
   .start-journey { min-height: 54px; font-size: 15px; }
 }
 @media (min-width: 760px) and (max-width: 899px) {
