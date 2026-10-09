@@ -15,7 +15,7 @@ const ScoreRing = ({ score, targetScore }) => {
   const offset = circumference - (circumference * currentScore) / 100;
 
   return (
-    <div className="relative w-48 h-48 my-space-xs flex items-center justify-center mx-auto">
+    <div className="relative w-48 h-48 my-space-xs flex items-center justify-center mx-auto score-ring">
       <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
         <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="68" stroke="currentColor" strokeWidth="12" />
         <circle 
@@ -130,7 +130,7 @@ export default function App() {
   const p = selectedRoute.parameters;
 
   return (
-    <div className="flex flex-col min-h-screen bg-surface selection:bg-primary-container selection:text-on-primary-container">
+    <div className="app-shell flex flex-col min-h-screen bg-surface selection:bg-primary-container selection:text-on-primary-container">
       
       <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
         <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
@@ -162,10 +162,19 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex flex-col relative w-full bg-surface flex-1">
-        <div className="flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
+      <main className="app-main flex flex-col relative w-full bg-surface flex-1">
+        <div className="app-content flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
+          <section className="route-intro">
+            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Route inspection</div>
+            <h2>{selectedRoute.name}</h2>
+            <div className="route-meta">
+              <span><span className="material-symbols-outlined">route</span>{selectedRoute.distance}</span>
+              <span><span className="material-symbols-outlined">schedule</span>{selectedRoute.travelTime}</span>
+              <span><span className="material-symbols-outlined">verified</span>{selectedRoute.dataConfidence} confidence</span>
+            </div>
+          </section>
           
-          <div className="flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
+          <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
             
             <ScoreRing score={selectedRoute.weightedScore} targetScore={selectedRoute.weightedScore} />
@@ -178,6 +187,8 @@ export default function App() {
                  'High Alert Route'}
               </span>
             </div>
+
+            <p className="score-summary">Safety estimate based on mapped lighting, nearby activity, police proximity, safe havens, and available incident data.</p>
             
             <div className="flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
               <span className="flex items-center gap-1">
@@ -194,13 +205,19 @@ export default function App() {
             </div>
           </div>
 
+          <details className="why-score">
+            <summary><span><span className="material-symbols-outlined">auto_awesome</span><span><strong>Why this score?</strong><small>How the route estimate is calculated</small></span></span><span className="material-symbols-outlined">expand_more</span></summary>
+            <p>The score combines five weighted factors: street lighting (25%), estimated pedestrian activity (20%), police and CCTV proximity (15%), safe havens (15%), and historical incident safety (25%). Values come from mapped data and estimates; historical incident data is provisional, and live sensors or verified CCTV coverage are not connected.</p>
+            <div className="why-note"><span className="material-symbols-outlined">info</span>Use this estimate as guidance, not a safety guarantee.</div>
+          </details>
+
           <div className="flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">tune</span>
                 <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Safety Factor Breakdown</h3>
               </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">Tap to expand</span>
+          <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">5 factors</span>
             </div>
             <div className="flex flex-col gap-space-sm">
               <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={p.lighting.score} colorClass="text-primary" evidence={p.lighting.evidence} />
@@ -264,7 +281,7 @@ export default function App() {
 
       <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl">
         <button className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
-          <span>Proceed with {selectedRoute.name}</span>
+          <span>Proceed with this safe route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
         </button>
       </div>
