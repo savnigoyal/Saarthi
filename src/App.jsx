@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
 import GuardianCircle from './GuardianCircle';
+import SafeRouteMap from './SafeRouteMap';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -179,6 +180,8 @@ export default function App() {
               <span><span className="material-symbols-outlined">verified</span>{selectedRoute.dataConfidence} confidence</span>
             </div>
           </section>
+
+          <SafeRouteMap />
 
           <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
