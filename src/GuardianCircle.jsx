@@ -183,7 +183,6 @@ export default function GuardianCircle({ route, onBack }) {
 
       {(notice || journey.active || journey.completed) && <div className={`journey-status ${journey.deviation ? 'warning' : ''}`} role="status">{journey.deviation ? 'Route deviation detected' : journey.active ? `Safe Journey Active · ${journey.gpsStatus === 'active' ? 'GPS active on this device' : settings.shareGPS ? 'GPS pending or unavailable' : 'GPS off'}` : notice || (journey.completed ? 'Arrived Safely' : '')}</div>}
       {journey.active && journey.trackingId && <p className="tracking-id">Demo tracking ID: <strong>{journey.trackingId}</strong> · Route checks need connected route geometry.</p>}
-      {journey.active && <button className="end-journey" onClick={endSafeJourney}>End Safe Journey</button>}
       {journey.completed && <div className="arrived-state"><span>✓</span>Arrived Safely</div>}
     </main>
     <footer className="guardian-footer"><button className="start-journey" onClick={journey.active ? endSafeJourney : journey.completed ? startSafeJourney : startSafeJourney}><span className="material-symbols-outlined">{journey.active ? 'check_circle' : 'shield'}</span>{journey.active ? 'Safe Journey Active · End Journey' : journey.completed ? 'Start Another Safe Journey' : 'Share & Start Safe Journey'}</button><p><span className="material-symbols-outlined">lock</span>Your guardians are ready to receive updates when you share. Location stays on this device.</p></footer>
