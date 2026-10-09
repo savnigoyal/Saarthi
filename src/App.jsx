@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
+import SafeGuardianCircle from './SafeGuardianCircle';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
 
   useEffect(() => {
-    // Reset and animate when target changes
     setCurrentScore(0);
     const timeout = setTimeout(() => setCurrentScore(targetScore), 150);
     return () => clearTimeout(timeout);
@@ -83,6 +83,7 @@ export default function App() {
   const [routes, setRoutes] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentView, setCurrentView] = useState('circle'); // 'circle' | 'detail'
 
   useEffect(() => {
     getAlternativeRoutes().then(data => {
@@ -104,35 +105,52 @@ export default function App() {
   }
 
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
-  
-  if (!selectedRoute) {
+
+  if (currentView === 'circle') {
     return (
-      <div className="flex flex-col min-h-screen bg-surface">
-        <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
-          <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
-            <div className="flex items-center gap-space-xs min-w-0">
-              <button className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
-                <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
-              </button>
-              <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Haven Detail</h1>
-            </div>
-          </div>
-        </header>
-        <div className="flex-1 flex flex-col items-center justify-center text-on-surface-variant p-gutter text-center">
-          <span className="material-symbols-outlined text-6xl mb-4 text-primary/50">satellite_alt</span>
-          <h2 className="font-headline-md font-bold text-on-surface mb-2">Awaiting Telemetry Data</h2>
-          <p className="font-body-md max-w-sm">No route candidates are currently available. Please submit a route request to receive a safety score assessment.</p>
+      <div>
+        {/* Navigation Bar for View Toggle */}
+        <div className="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur border-b border-surface-container-highest px-gutter py-2 flex items-center justify-between text-xs max-w-lg mx-auto">
+          <button 
+            onClick={() => setCurrentView('detail')}
+            className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-bold"
+          >
+            <span className="material-symbols-outlined text-sm">shield</span>
+            <span>Haven Detail</span>
+          </button>
+          <span className="text-primary font-bold flex items-center gap-1">
+            <span className="material-symbols-outlined text-sm">shield_person</span>
+            <span>Safe Guardian Circle</span>
+          </span>
         </div>
+
+        <SafeGuardianCircle 
+          selectedRoute={selectedRoute} 
+          onNavigateBack={() => setCurrentView('detail')} 
+        />
       </div>
     );
   }
 
-  const p = selectedRoute.parameters;
-
   return (
     <div className="flex flex-col min-h-screen bg-surface selection:bg-primary-container selection:text-on-primary-container">
       
-      <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
+      {/* Top View Toggle Bar */}
+      <div className="sticky top-0 z-[60] bg-surface-container-lowest/90 backdrop-blur border-b border-surface-container-highest px-gutter py-2 flex items-center justify-between text-xs max-w-lg mx-auto">
+        <span className="text-primary font-bold flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm">shield</span>
+          <span>Haven Detail</span>
+        </span>
+        <button 
+          onClick={() => setCurrentView('circle')}
+          className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-bold"
+        >
+          <span className="material-symbols-outlined text-sm">shield_person</span>
+          <span>Safe Guardian Circle</span>
+        </button>
+      </div>
+
+      <header className="sticky top-[33px] inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
         <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
           <div className="flex items-center gap-space-xs min-w-0">
             <button className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
@@ -203,11 +221,11 @@ export default function App() {
               <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">Tap to expand</span>
             </div>
             <div className="flex flex-col gap-space-sm">
-              <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={p.lighting.score} colorClass="text-primary" evidence={p.lighting.evidence} />
-              <FactorCard icon="groups" title="Pedestrian Footfall" score={p.pedestrian.score} colorClass="text-secondary" evidence={p.pedestrian.evidence} />
-              <FactorCard icon="videocam" title="Police & CCTV Proximity" score={p.police.score} colorClass="text-primary" evidence={p.police.evidence} />
-              <FactorCard icon="storefront" title="Safe Havens" score={p.safeHavens.score} colorClass="text-primary" evidence={p.safeHavens.evidence} />
-              <FactorCard icon="verified" title="Historical Incident Index" score={p.historical.score} colorClass="text-primary" evidence={p.historical.evidence} />
+              <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={selectedRoute.parameters.lighting.score} colorClass="text-primary" evidence={selectedRoute.parameters.lighting.evidence} />
+              <FactorCard icon="groups" title="Pedestrian Footfall" score={selectedRoute.parameters.pedestrian.score} colorClass="text-secondary" evidence={selectedRoute.parameters.pedestrian.evidence} />
+              <FactorCard icon="videocam" title="Police & CCTV Proximity" score={selectedRoute.parameters.police.score} colorClass="text-primary" evidence={selectedRoute.parameters.police.evidence} />
+              <FactorCard icon="storefront" title="Safe Havens" score={selectedRoute.parameters.safeHavens.score} colorClass="text-primary" evidence={selectedRoute.parameters.safeHavens.evidence} />
+              <FactorCard icon="verified" title="Historical Incident Index" score={selectedRoute.parameters.historical.score} colorClass="text-primary" evidence={selectedRoute.parameters.historical.evidence} />
             </div>
           </div>
 
@@ -263,7 +281,10 @@ export default function App() {
       </main>
 
       <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl">
-        <button className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
+        <button 
+          onClick={() => setCurrentView('circle')}
+          className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
+        >
           <span>Proceed with {selectedRoute.name}</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
         </button>
