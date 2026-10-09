@@ -254,17 +254,18 @@ body { background: #080d19; }
 
 /* Keep the route detail screen fluid across phone, tablet, and laptop widths. */
 @media (min-width: 900px) {
-  .app-shell { width: min(calc(100% - 64px), 1240px); max-width: none; margin: 24px auto; min-height: calc(100dvh - 48px); border: 1px solid #252d40; border-radius: 20px; overflow: clip; }
-  .app-content { width: 100%; max-width: none; margin-bottom: 0; padding: 22px 24px 24px; gap: 18px; }
+  .app-shell { width: min(calc(100% - 64px), 1240px); max-width: none; margin: 24px auto; min-height: calc(100dvh - 48px); border: 1px solid #252d40; border-radius: 20px; overflow: visible; }
+  .app-content { width: 100%; max-width: none; margin-bottom: 0; padding: 22px 24px 120px; gap: 18px; }
   .app-shell > header > div:first-child, .app-shell > header > div:nth-child(2) { padding-inline: 24px; }
-  .app-shell > .fixed.bottom-0 { position: static; inset: auto; width: auto; transform: none; margin-top: auto; padding: 12px 24px 22px; background: none; border: 0; }
-  .app-shell > .fixed.bottom-0 button { width: 100%; max-width: none; height: 54px; font-size: 15px; }
+  .app-shell > .fixed.bottom-0 { position: fixed; z-index: 50; inset: auto auto 0 50%; width: min(calc(100% - 64px), 1240px); transform: translateX(-50%); margin: 0; padding: 14px 24px calc(14px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(180deg, #0b132600, #0b1326f5 25%); border: 0; }
+  .app-shell > .fixed.bottom-0 button { width: 100%; max-width: none; height: 56px; font-size: 16px; }
 }
 
 @media (min-width: 600px) and (max-width: 899px) {
   .app-shell { width: min(calc(100% - 40px), 820px); max-width: none; margin-block: 20px; min-height: calc(100dvh - 40px); border: 1px solid #252d40; border-radius: 18px; overflow: clip; }
   .app-content { width: 100%; max-width: none; padding: 18px 20px 110px; gap: 16px; }
-  .app-shell > .fixed.bottom-0 { width: min(calc(100% - 40px), 820px); }
+  .app-content { padding-bottom: 120px; }
+  .app-shell > .fixed.bottom-0 { left: 50%; right: auto; bottom: 0; width: min(calc(100% - 40px), 820px); transform: translateX(-50%); }
 }
 
 @media (max-width: 599px) {
