@@ -76,7 +76,7 @@
 
 @layer base {
   html, body {
-    width: 100vw;
+    width: 100%;
     margin: 0;
     padding: 0;
   }
@@ -197,7 +197,7 @@ body { background: #080d19; }
 }
 
 @media (min-width: 1024px) {
-  .app-shell { width: min(100% - 64px, 1120px); margin-block: 24px; min-height: calc(100dvh - 48px); }
+  .app-shell { width: min(100% - 64px, 1240px); max-width: none; margin-block: 24px; min-height: calc(100dvh - 48px); }
   .app-shell > header > div:first-child { height: 64px; padding-inline: 24px; }
   .app-shell > header > div:nth-child(2) { padding-inline: 24px; }
   .app-content { padding: 22px 24px 112px; gap: 18px; }
@@ -206,7 +206,7 @@ body { background: #080d19; }
   .score-card { min-height: 330px; }
   .score-ring { width: 190px; height: 190px; }
   .factor-section, .segment-section { padding: 18px; }
-  .app-shell > .fixed.bottom-0 { width: min(100% - 64px, 1120px); padding-inline: 24px; }
+  .app-shell > .fixed.bottom-0 { width: min(100% - 64px, 1240px); padding-inline: 24px; }
 }
 
 @media (max-width: 380px) {
@@ -215,4 +215,39 @@ body { background: #080d19; }
   .route-intro h2 { font-size: 14px; }
   .score-ring { width: 132px; height: 132px; }
   .score-card .inline-flex { max-width: 100%; text-align: center; }
+}
+
+/* Define the type sizes used by the reference classes explicitly so text
+   remains consistent across Tailwind builds and viewport breakpoints. */
+.text-label-sm { font-size: 10px; line-height: 14px; }
+.text-label-md { font-size: 12px; line-height: 16px; }
+.text-label-lg { font-size: 14px; line-height: 20px; }
+.text-body-sm { font-size: 12px; line-height: 17px; }
+.text-body-md { font-size: 14px; line-height: 21px; }
+.text-headline-xl { font-size: 34px; line-height: 40px; }
+.text-headline-md { font-size: 18px; line-height: 24px; }
+.text-headline-lg-mobile { font-size: 22px; line-height: 28px; }
+.text-headline-xl-mobile { font-size: 28px; line-height: 36px; }
+.route-meta, .why-score, .route-intro, .score-card, .factor-section, .segment-section, .review-card { min-width: 0; }
+.route-intro h2, .factor-section h3, .segment-section h3 { overflow-wrap: anywhere; }
+.route-meta > span { min-width: 0; }
+.factor-section > .flex:first-child { gap: 10px; align-items: flex-start; }
+.factor-section > .flex:first-child > div { min-width: 0; }
+.factor-section > .flex:first-child h3, .segment-section > .flex:first-child h3 { text-align: left; }
+.segment-section .relative.flex.flex-col.gap-space-md > .flex { min-width: 0; }
+.segment-section .relative.flex.flex-col.gap-space-md > .flex > .flex-1 { min-width: 0; }
+.segment-section .relative.flex.flex-col.gap-space-md .flex.items-center.justify-between { gap: 8px; }
+.segment-section .relative.flex.flex-col.gap-space-md .font-label-md { overflow-wrap: anywhere; }
+@media (min-width: 700px) {
+  .text-label-sm { font-size: 11px; line-height: 15px; }
+  .text-label-md { font-size: 13px; line-height: 18px; }
+  .text-body-sm { font-size: 13px; line-height: 19px; }
+  .text-headline-md { font-size: 20px; line-height: 27px; }
+}
+@media (min-width: 1024px) {
+  .app-shell { box-shadow: 0 18px 60px #0006; }
+  .route-meta { font-size: 12px; }
+  .text-headline-md { font-size: 22px; line-height: 29px; }
+  .text-headline-lg-mobile { font-size: 25px; line-height: 32px; }
+  .app-content > .flex.flex-col.bg-surface-container .rounded-lg .text-label-md { font-size: 12px; line-height: 17px; }
 }
