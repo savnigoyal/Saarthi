@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
+import GuardianCircle from './GuardianCircle';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -83,6 +84,7 @@ export default function App() {
   const [routes, setRoutes] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showGuardians, setShowGuardians] = useState(false);
 
   useEffect(() => {
     getAlternativeRoutes().then(data => {
@@ -104,6 +106,10 @@ export default function App() {
   }
 
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
+
+  if (selectedRoute && showGuardians) {
+    return <GuardianCircle route={selectedRoute} onBack={() => setShowGuardians(false)} />;
+  }
   
   if (!selectedRoute) {
     return (
@@ -280,7 +286,7 @@ export default function App() {
       </main>
 
       <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl">
-        <button className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
+        <button onClick={() => setShowGuardians(true)} className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
           <span>Proceed with this safe route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
         </button>
