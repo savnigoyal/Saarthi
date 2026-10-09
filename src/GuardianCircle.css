@@ -88,3 +88,51 @@
 .emergency-mark { width: 44px; height: 44px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; color: #4a1420; background: #ff9caf; font-size: 25px; font-weight: 900; }
 .call-button { color: #ffb4ab; border: 1px solid #ffb4ab80; background: transparent; }
 @media (min-width: 600px) { .guardian-shell { margin-block: 20px; min-height: calc(100dvh - 40px); border-radius: 18px; overflow: clip; } .guardian-footer { bottom: 20px; border-radius: 0 0 18px 18px; } }
+
+/* Desktop uses the available viewport as a two-column dashboard. */
+@media (min-width: 900px) {
+  .guardian-shell { width: min(calc(100% - 64px), 1180px); max-width: none; min-height: calc(100dvh - 64px); margin: 32px auto; padding: 0 0 24px; border: 1px solid #252d40; border-radius: 22px; overflow: visible; box-shadow: 0 20px 70px #0005; }
+  .guardian-header { height: 72px; padding: 0 28px; border-radius: 22px 22px 0 0; }
+  .guardian-header h1 { font-size: 20px; }
+  .guardian-content { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 0 28px; padding: 22px 28px 12px; }
+  .guardian-eyebrow,.guardian-content > h2,.guardian-subtitle,.guardian-route,.dispatch-section,.journey-status,.tracking-id,.end-journey,.arrived-state { grid-column: 1 / -1; }
+  .guardian-content > h2 { margin-top: 14px; font-size: 28px; line-height: 35px; }
+  .guardian-subtitle { margin-bottom: 14px; font-size: 15px; }
+  .guardian-route { min-height: 72px; padding: 12px 16px; }
+  .guardian-section { margin-top: 24px; }
+  .guardian-content > .guardian-section:not(.settings-section) { grid-column: 1; grid-row: 5; }
+  .settings-section { grid-column: 2; grid-row: 5 / span 3; margin-top: 24px; }
+  .guardian-section-title h3,.settings-section > h3 { font-size: 16px; }
+  .guardian-card { min-height: 72px; padding: 10px 14px; }
+  .guardian-details strong { font-size: 14px; }
+  .guardian-details small { font-size: 11px; }
+  .add-guardian { height: 48px; }
+  .setting-row { min-height: 72px; }
+  .setting-copy strong { font-size: 12px; }
+  .setting-copy small { font-size: 11px; }
+  .dispatch-section { margin-top: 24px; }
+  .dispatch-card { padding: 16px; }
+  .dispatch-card p { font-size: 13px; line-height: 20px; }
+  .journey-status,.tracking-id,.end-journey,.arrived-state { margin-top: 12px; }
+  .guardian-footer { position: static; width: auto; max-width: 620px; margin: 8px auto 0; padding: 12px 28px 0; transform: none; background: none; }
+  .start-journey { min-height: 56px; font-size: 16px; }
+  .guardian-footer p { justify-content: center; font-size: 10px; }
+}
+
+/* Tablet gets a wider canvas while keeping a single-column reading flow. */
+@media (min-width: 600px) and (max-width: 899px) {
+  .guardian-shell { width: min(calc(100% - 40px), 820px); max-width: none; min-height: calc(100dvh - 40px); margin: 20px auto; padding-bottom: 24px; border: 1px solid #252d40; border-radius: 18px; overflow: visible; box-shadow: 0 14px 44px #0005; }
+  .guardian-header { height: 64px; padding-inline: 22px; }
+  .guardian-content { padding: 20px 22px 12px; }
+  .guardian-footer { position: static; width: auto; max-width: 620px; margin: 8px auto 0; padding: 12px 22px 0; transform: none; background: none; }
+  .start-journey { min-height: 54px; font-size: 15px; }
+}
+@media (min-width: 760px) and (max-width: 899px) {
+  .guardian-content { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 0 22px; }
+  .guardian-eyebrow,.guardian-content > h2,.guardian-subtitle,.guardian-route,.dispatch-section,.journey-status,.tracking-id,.end-journey,.arrived-state { grid-column: 1 / -1; }
+  .guardian-content > h2 { margin-top: 13px; font-size: 25px; line-height: 32px; }
+  .guardian-content > .guardian-section:not(.settings-section) { grid-column: 1; grid-row: 5; }
+  .settings-section { grid-column: 2; grid-row: 5 / span 3; margin-top: 24px; }
+  .guardian-card { min-height: 68px; }
+  .setting-row { min-height: 66px; }
+}

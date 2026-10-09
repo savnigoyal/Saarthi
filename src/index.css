@@ -251,3 +251,24 @@ body { background: #080d19; }
   .text-headline-lg-mobile { font-size: 25px; line-height: 32px; }
   .app-content > .flex.flex-col.bg-surface-container .rounded-lg .text-label-md { font-size: 12px; line-height: 17px; }
 }
+
+/* Keep the route detail screen fluid across phone, tablet, and laptop widths. */
+@media (min-width: 900px) {
+  .app-shell { width: min(calc(100% - 64px), 1240px); max-width: none; margin: 24px auto; min-height: calc(100dvh - 48px); border: 1px solid #252d40; border-radius: 20px; overflow: clip; }
+  .app-content { width: 100%; max-width: none; margin-bottom: 0; padding: 22px 24px 24px; gap: 18px; }
+  .app-shell > header > div:first-child, .app-shell > header > div:nth-child(2) { padding-inline: 24px; }
+  .app-shell > .fixed.bottom-0 { position: static; inset: auto; width: auto; transform: none; margin-top: auto; padding: 12px 24px 22px; background: none; border: 0; }
+  .app-shell > .fixed.bottom-0 button { width: 100%; max-width: none; height: 54px; font-size: 15px; }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .app-shell { width: min(calc(100% - 40px), 820px); max-width: none; margin-block: 20px; min-height: calc(100dvh - 40px); border: 1px solid #252d40; border-radius: 18px; overflow: clip; }
+  .app-content { width: 100%; max-width: none; padding: 18px 20px 110px; gap: 16px; }
+  .app-shell > .fixed.bottom-0 { width: min(calc(100% - 40px), 820px); }
+}
+
+@media (max-width: 599px) {
+  .app-shell { width: 100%; max-width: 480px; margin: 0 auto; }
+  .app-content { padding-bottom: calc(94px + env(safe-area-inset-bottom, 0px)); }
+  .app-shell > .fixed.bottom-0 { left: 0; right: 0; width: 100%; transform: none; }
+}
