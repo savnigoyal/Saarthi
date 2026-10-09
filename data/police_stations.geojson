@@ -1,0 +1,92 @@
+{
+  "type": "FeatureCollection",
+  "name": "police_stations",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 20419201,
+        "name": "Metro Police Outpost",
+        "amenity": "police",
+        "operator": "Jaipur Police Commissionerate",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2371212",
+        "addr:street": "Sector 4 Transit Plaza, MI Road",
+        "addr:city": "Jaipur",
+        "wheelchair": "yes"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7892, 26.9135] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 20419202,
+        "name": "Kotwali Police Station",
+        "amenity": "police",
+        "operator": "Rajasthan Police",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2560291",
+        "addr:street": "Badi Chaupar, Old City",
+        "addr:city": "Jaipur"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7915, 26.9152] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 20419203,
+        "name": "Ashok Nagar Police Thana",
+        "amenity": "police",
+        "operator": "Jaipur Police",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2385100",
+        "addr:street": "Near Statue Circle, C-Scheme",
+        "addr:city": "Jaipur"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7930, 26.9085] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 20419204,
+        "name": "Sindhi Camp Police Assistance Booth",
+        "amenity": "police",
+        "operator": "Traffic & Patrol Division",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2204560",
+        "addr:street": "Station Road, Kanti Nagar",
+        "addr:city": "Jaipur"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7955, 26.9180] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 20419205,
+        "name": "Vidhadhar Nagar Police Station",
+        "amenity": "police",
+        "operator": "Jaipur North Division",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2234900",
+        "addr:street": "Sector 2, Vidhadhar Nagar",
+        "addr:city": "Jaipur"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7790, 26.9550] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 20419206,
+        "name": "Mansarovar Police Station",
+        "amenity": "police",
+        "operator": "Jaipur South Division",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2391000",
+        "addr:street": "Madhyam Marg, Mansarovar",
+        "addr:city": "Jaipur"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7600, 26.8550] }
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
 import GuardianCircle from './GuardianCircle';
 import SafeRouteMap from './SafeRouteMap';
+import SafeHavens from './SafeHavens';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -86,6 +87,7 @@ export default function App() {
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showGuardians, setShowGuardians] = useState(false);
+  const [currentTab, setCurrentTab] = useState('havens');
 
   useEffect(() => {
     getAlternativeRoutes().then(data => {
@@ -106,10 +108,28 @@ export default function App() {
     );
   }
 
+  if (currentTab === 'havens') {
+    return (
+      <SafeHavens
+        onNavigate={(tab) => {
+          if (tab === 'home') {
+            setCurrentTab('home');
+            setShowGuardians(false);
+          } else if (tab === 'guardian') {
+            setCurrentTab('guardian');
+            setShowGuardians(true);
+          } else {
+            setCurrentTab(tab);
+          }
+        }}
+      />
+    );
+  }
+
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
 
-  if (selectedRoute && showGuardians) {
-    return <GuardianCircle route={selectedRoute} onBack={() => setShowGuardians(false)} />;
+  if ((selectedRoute && showGuardians) || (selectedRoute && currentTab === 'guardian')) {
+    return <GuardianCircle route={selectedRoute} onBack={() => { setShowGuardians(false); setCurrentTab('havens'); }} />;
   }
   
   if (!selectedRoute) {
@@ -288,10 +308,14 @@ export default function App() {
         </div>
       </main>
 
-      <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl">
-        <button onClick={() => setShowGuardians(true)} className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
+      <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl flex flex-col gap-2 max-w-lg mx-auto">
+        <button onClick={() => { setShowGuardians(true); setCurrentTab('guardian'); }} className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
           <span>Proceed with this safe route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
+        </button>
+        <button onClick={() => setCurrentTab('havens')} className="w-full h-10 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">
+          <span className="material-symbols-outlined text-base">storefront</span>
+          <span>View Nearby Safe Havens</span>
         </button>
       </div>
     </div>
