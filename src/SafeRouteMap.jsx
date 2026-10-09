@@ -5,6 +5,10 @@ import './SafeRouteMap.css';
 
 const DEFAULT_CENTER = [20, 0];
 const FOOT_ROUTER = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
+const JAIPUR_MUJ_DEMO = {
+  origin: { latitude: 26.9202, longitude: 75.786919, label: 'Jaipur Junction (demo start)' },
+  destination: { latitude: 26.843656, longitude: 75.566387, label: 'Manipal University Jaipur campus (demo destination)' },
+};
 
 function formatDistance(meters) {
   return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
@@ -22,6 +26,7 @@ export default function SafeRouteMap() {
   const [draft, setDraft] = useState('');
   const [destination, setDestination] = useState(null);
   const [location, setLocation] = useState(null);
+  const [locationLabel, setLocationLabel] = useState('');
   const [locationState, setLocationState] = useState('idle');
   const [locationMessage, setLocationMessage] = useState('Your location is only requested when you tap the button.');
   const [destinationError, setDestinationError] = useState('');
@@ -134,6 +139,7 @@ export default function SafeRouteMap() {
     setLocationMessage('Requesting your location…');
     navigator.geolocation.getCurrentPosition(({ coords }) => {
       setLocation({ latitude: coords.latitude, longitude: coords.longitude });
+      setLocationLabel('Your current location');
       setLocationState('ready');
       setLocationMessage('Current location detected.');
       setMapOpen(true);
@@ -146,6 +152,19 @@ export default function SafeRouteMap() {
       };
       setLocationMessage(messages[error.code] || 'Could not detect your location. Please retry.');
     }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+  }
+
+  function loadJaipurCampusDemo() {
+    setLocation({ latitude: JAIPUR_MUJ_DEMO.origin.latitude, longitude: JAIPUR_MUJ_DEMO.origin.longitude });
+    setLocationLabel(JAIPUR_MUJ_DEMO.origin.label);
+    setDestination(JAIPUR_MUJ_DEMO.destination);
+    setDraft('');
+    setDestinationError('');
+    setRoute(null);
+    setRouteMessage('');
+    setLocationState('ready');
+    setLocationMessage('Demo start point selected: Jaipur Junction. This is not your live location.');
+    setMapOpen(true);
   }
 
   async function submitDestination(event) {
@@ -197,6 +216,8 @@ export default function SafeRouteMap() {
         <input id="safe-map-destination" value={draft} onChange={(event) => setDraft(event.target.value)} maxLength={200} placeholder="Search a place or address" autoComplete="street-address" />
         <button type="submit" className="safe-map-submit" disabled={searching}>{searching ? 'Searching…' : 'Find place'}</button>
       </form>
+      <button type="button" className="safe-map-demo" onClick={loadJaipurCampusDemo}>Try Jaipur demo: Jaipur Junction → MUJ</button>
+      <p className="safe-map-demo-note">Uses an example start point and the MUJ campus. Route distance and time are requested live; this demo does not assess safety and may be a long walk.</p>
       {destinationError && <p className="safe-map-error" role="alert">{destinationError}</p>}
 
       {!mapOpen ? (
@@ -212,6 +233,7 @@ export default function SafeRouteMap() {
       )}
 
       {destination && <p className="safe-map-destination">Destination: {destination.label}</p>}
+      {location && locationLabel && <p className="safe-map-destination">Start: {locationLabel}</p>}
       {(routeMessage || route) && <div className={`safe-map-route ${routeMessage && routeMessage !== 'Getting a walking route…' ? 'is-error' : ''}`} role="status">
         {route ? <><strong>Walking route</strong><span>{formatDistance(route.distance)} · about {formatDuration(route.duration)}</span></> : <span>{routeMessage}</span>}
       </div>}

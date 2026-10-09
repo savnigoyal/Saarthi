@@ -63,6 +63,10 @@
 .safe-map-error { margin: -5px 0 0; font-size: 0.8rem; }
 
 .safe-map-search { display: flex; gap: 8px; }
+.safe-map-demo { align-self: flex-start; min-height: 34px; border: 1px solid #57f1db55; border-radius: 999px; padding: 6px 11px; color: #57f1db; background: #57f1db10; font: inherit; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+.safe-map-demo:hover { background: #57f1db20; }
+.safe-map-demo:focus-visible { outline: 2px solid #57f1db; outline-offset: 2px; }
+.safe-map-demo-note { margin: -8px 0 0; color: var(--on-surface-variant, #aab5cb); font-size: 0.72rem; line-height: 1.45; }
 .safe-map-search input {
   flex: 1;
   min-width: 0;
