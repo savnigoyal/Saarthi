@@ -57,7 +57,7 @@ export default function GuardianCircle({ route, onBack }) {
   const score = routeData.safetyScore;
   const routeName = routeData.routeName;
   const eta = journey.eta || routeData.eta;
-  const trackingLink = journey.trackingId ? `https://saathi.safe/track/${journey.trackingId}` : '';
+  const trackingLink = journey.trackingId ? `saathi.safe/track/${journey.trackingId}` : '';
   const primaryGuardian = guardians.find(g => g.primary) || guardians[0];
 
   useEffect(() => { localStorage.setItem('saferoute.guardians', JSON.stringify(guardians)); }, [guardians]);
@@ -103,8 +103,9 @@ export default function GuardianCircle({ route, onBack }) {
     }, 15000);
     if (settings.shareETA) etaTimer.current = setInterval(() => {}, 60000);
     startEmergencyMonitoring();
-    const startMessage = [`🛡️ Anushka has started her journey to ${routeData.destination} via ${routeName}.`, `Safety Score: ${score}/100.`, ...(settings.shareETA ? [`ETA: ${routeData.eta}.`] : []), ...(settings.shareGPS ? ['GPS sharing requested on this device.'] : []), ...(settings.routeDeviationAlert ? ['Route deviation checks require connected route geometry.'] : []), `Demo tracking link: https://saathi.safe/track/${trackingId}`].join('\n');
-    if (navigator.share) navigator.share({ title: 'SafeRoute journey', text: startMessage, url: `https://saathi.safe/track/${trackingId}` }).catch(error => { if (error.name !== 'AbortError') setNotice('Journey active. Sharing did not complete; you can copy the preview below.'); });
+    const startLink = `saathi.safe/track/${trackingId}`;
+    const startMessage = [`🛡️ Anushka has started her night walk to ${routeData.destination} via ${routeName}.`, `Safety Score: ${score}/100`, ...(settings.shareETA ? [`ETA: ${routeData.eta}`] : []), settings.shareGPS ? 'Live location sharing is starting on this device.' : 'Live location sharing is paused.', ...(settings.routeDeviationAlert ? ['Route deviation alert (>100m) enabled; route data unavailable.'] : []), `Track journey:\n${startLink}`].join('\n\n');
+    if (navigator.share) navigator.share({ title: 'SafeRoute journey', text: startMessage }).catch(error => { if (error.name !== 'AbortError') setNotice('Journey active. Sharing did not complete; you can copy the preview below.'); });
   }
   function completeSafeJourney() {
     stopGPSTracking(); clearTimers(); setEmergency(false);
@@ -115,16 +116,25 @@ export default function GuardianCircle({ route, onBack }) {
     if (window.confirm('End this Safe Journey and stop location sharing?')) completeSafeJourney();
   }
   function generateGuardianMessage() {
-    if (!journey.trackingId) return `Anushka is preparing a SafeRoute journey to ${routeData.destination}. Route: ${routeName}. Safety Score: ${score}/100.`;
-    if (journey.completed) return `✅ Anushka has completed her journey and arrived safely at ${journey.destination}. GPS sharing has stopped.`;
-    const parts = [`🛡️ Anushka has started her journey to ${journey.destination} via ${journey.routeName}.`, `Safety Score: ${journey.safetyScore}/100.`];
-    if (settings.shareETA) parts.push(`ETA: ${journey.eta}.`);
-    if (settings.shareGPS && journey.gpsStatus === 'active') parts.push('GPS is active on this device.');
-    else if (settings.shareGPS) parts.push('GPS sharing was requested; device location is not currently available.');
-    if (settings.routeDeviationAlert) parts.push('Route deviation monitoring is ready; route geometry is not connected yet.');
-    if (journey.deviation && settings.routeDeviationAlert) parts.push('Route deviation detected. Please check in with Anushka.');
-    parts.push(`Demo tracking link: ${trackingLink}`);
-    return parts.join('\n');
+    if (!journey.trackingId) return `🛡️ Anushka is preparing for her night walk to ${routeData.destination} via ${routeName}.\n\nSafety Score: ${score}/100.`;
+    if (journey.completed) return `✅ Anushka has arrived safely at ${journey.destination}.\n\nLocation sharing has stopped.`;
+    const locationStatus = settings.shareGPS && journey.gpsStatus === 'active'
+      ? 'Live location sharing is active on this device.'
+      : 'Live location sharing is paused.';
+    const deviationStatus = !settings.routeDeviationAlert
+      ? null
+      : routeData.plannedRoute && journey.gpsStatus === 'active'
+        ? 'Route deviation alert (>100m) active.'
+        : 'Route deviation alert (>100m) enabled; route data unavailable.';
+    return [
+      `🛡️ Anushka has started her night walk to ${journey.destination} via ${journey.routeName}.`,
+      `Safety Score: ${journey.safetyScore}/100`,
+      settings.shareETA ? `ETA: ${journey.eta}` : null,
+      locationStatus,
+      deviationStatus,
+      journey.deviation ? 'Route deviation detected. Please check in with Anushka.' : null,
+      `Track journey:\n${trackingLink}`,
+    ].filter(Boolean).join('\n\n');
   }
   async function copyText(text) {
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); }
@@ -132,7 +142,7 @@ export default function GuardianCircle({ route, onBack }) {
   }
   async function shareJourney() {
     const message = generateGuardianMessage();
-    if (navigator.share) { try { await navigator.share({ title: 'SafeRoute journey', text: message, url: trackingLink || undefined }); } catch (error) { if (error.name !== 'AbortError') setNotice('Sharing did not complete. You can copy the message below.'); } }
+    if (navigator.share) { try { await navigator.share({ title: 'SafeRoute journey', text: message }); } catch (error) { if (error.name !== 'AbortError') setNotice('Sharing did not complete. You can copy the message below.'); } }
     else await copyText(message);
   }
   function addGuardian(event) {
