@@ -1,54 +1,16 @@
-# WAYSAFE - Safety Scoring & Route Selection Engine
+# React + Vite
 
-This project implements the WAYSAFE safety evaluation logic to score night-travel candidate routes based on fixed telemetry weights and provide rigorous safety indexing.
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-## Components
-- `index.html`: The UI mockup for the Haven Detail / Deep Route Inspection page.
-- `safetyEngine.js`: The core scoring engine class that strictly follows the weighted calculation rules.
+Currently, two official plugins are available:
 
-## Using the Engine
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-The engine calculates a route's safety score using a fixed, 5-parameter formula:
-- Street Lighting & Visibility (25%)
-- Pedestrian Activity (20%)
-- Police & CCTV Proximity (15%)
-- Safe Havens & Infrastructure (15%)
-- Historical Incident Safety (25%)
+## React Compiler
 
-### Example Usage (Node.js or Browser)
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-```javascript
-// If in Node: const SafetyEngine = require('./safetyEngine');
+## Expanding the Oxlint configuration
 
-const engine = new SafetyEngine();
-
-// Candidate data set
-const sampleRoutes = [
-  {
-    id: "r1",
-    name: "Via Grand Boulevard & Park Ave Safe Corridor",
-    travelTime: "18 min walk",
-    dataConfidence: "High",
-    parameters: {
-      lighting: { score: 98, evidence: "Verified high-lux municipal LEDs throughout corridor." },
-      pedestrian: { score: 88, evidence: "Estimated active late-night cafes & transit interchange crowd." },
-      police: { score: 94, evidence: "Verified patrol checkpoint at 800m & 1.6km markers." },
-      safeHavens: { score: 90, evidence: "Verified Apollo Pharmacy, Cafe Coffee Day, Metro Outpost." },
-      historical: { score: 96, evidence: "Verified zero incidents reported within past 90 days." }
-    },
-    keyAdvantages: [
-      "Exceptional street lighting coverage (98%) ensuring high visibility.",
-      "Perfect historical safety record with no incidents in the past 90 days."
-    ],
-    knownConcerns: [
-      "Pedestrian activity (88%) is the lowest score, though still robust."
-    ],
-    missingOrOutdatedData: []
-  }
-];
-
-const result = engine.compareRoutes(sampleRoutes);
-console.log(engine.formatOutput(result));
-```
-
-When you have the full dataset available, simply format it into objects following the structure above and pass it into the `engine.compareRoutes()` method.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
