@@ -322,16 +322,6 @@ export default function App() {
         <div className="app-content flex flex-col w-full pb-40 px-gutter pt-space-md gap-space-lg max-w-5xl mx-auto">
           <SafeRouteMap />
 
-          <section className="route-intro">
-            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Sample score breakdown</div>
-            <h2>{selectedRoute.name}</h2>
-            <div className="route-meta">
-              <span><span className="material-symbols-outlined">route</span>{selectedRoute.distance}</span>
-              <span><span className="material-symbols-outlined">schedule</span>{selectedRoute.travelTime}</span>
-              <span><span className="material-symbols-outlined">science</span>{selectedRoute.dataConfidence} data</span>
-            </div>
-          </section>
-
           <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
 
