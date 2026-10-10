@@ -307,13 +307,13 @@ body { background: #080d19; }
 .campus-demo-actions button + button { border: 1px solid #57f1db40; color: #57f1db; background: #171f33; }
 .campus-demo-actions button:focus-visible { outline: 2px solid #dae2fd; outline-offset: 2px; }
 .campus-demo-actions .material-symbols-outlined { font-size: 17px; }
-.app-shell:not(.campus-demo-shell) > main .app-content { padding-bottom: calc(168px + env(safe-area-inset-bottom, 0px)); }
+.app-shell:not(.campus-demo-shell) > main .app-content { padding-bottom: 28px; }
 @media (min-width: 600px) {
   .campus-demo-shell { overflow: clip; }
   .campus-demo-content { padding-bottom: 140px; }
   .campus-demo-actions { bottom: 20px; width: min(calc(100% - 40px), 820px); padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); border: 1px solid #ffffff12; border-radius: 0 0 18px 18px; }
   .campus-demo-actions button { min-height: 50px; font-size: 13px; }
-  .app-shell:not(.campus-demo-shell) > main .app-content { padding-bottom: 180px; }
+  .app-shell:not(.campus-demo-shell) > main .app-content { padding-bottom: 36px; }
 }
 @media (min-width: 900px) {
   .campus-demo-shell { overflow: visible; }

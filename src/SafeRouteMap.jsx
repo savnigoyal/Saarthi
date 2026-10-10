@@ -253,7 +253,6 @@ export default function SafeRouteMap() {
           <h3 id="safe-map-title">Routes from Manipal University Jaipur</h3>
           <p className="route-planner-subtitle">Start point is a demo location. Select a nearby destination to compare paths.</p>
         </div>
-        <span className="route-demo-badge"><span className="material-symbols-outlined">science</span>Sample safety scores</span>
       </div>
 
       <div className="route-planner-form">

@@ -317,20 +317,6 @@ export default function App() {
           </div>
         </div>
 
-        <div className="px-gutter pb-3">
-          <div className="mb-2 text-[9px] font-extrabold uppercase tracking-widest text-on-surface-variant">Sample score examples</div>
-          <div className="flex gap-2 overflow-x-auto">
-            {routes.map(r => (
-              <button
-                key={r.id}
-                onClick={() => setSelectedRouteId(r.id)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap font-label-sm font-bold transition-colors ${selectedRouteId === r.id ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
-              >
-                {r.name} · {Math.round(r.weightedScore)}/100
-              </button>
-            ))}
-          </div>
-        </div>
       </header>
 
       <main className="app-main flex flex-col relative w-full bg-surface flex-1">
@@ -450,22 +436,6 @@ export default function App() {
         </div>
       </main>
 
-      <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl flex flex-col gap-2 max-w-lg mx-auto">
-        <button
-          onClick={() => {
-            setShowGuardians(true);
-            setCurrentTab('guardian');
-          }}
-          className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
-        >
-          <span>Guardian demo for sample route</span>
-          <span className="material-symbols-outlined text-xl">arrow_forward</span>
-        </button>
-        <button onClick={() => setCurrentTab('havens')} className="w-full h-10 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">
-          <span className="material-symbols-outlined text-base">storefront</span>
-          <span>View Nearby Safe Havens</span>
-        </button>
-      </div>
     </div>
   );
 }
