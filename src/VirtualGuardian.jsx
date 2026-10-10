@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import safetyVideoUrl from '../safety_audio.mp4';
+import safetyVideoUrl from '../safety.mp4';
 import './VirtualGuardian.css';
 
 export default function VirtualGuardian({ onBack }) {
