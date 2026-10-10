@@ -478,37 +478,6 @@ export default function SafeHavens({ onNavigate }) {
           </div>
         )}
 
-        {!locationError && (
-          <div className={`haven-gps-banner ${showingDemoPlaces ? 'is-demo' : ''}`}>
-            <p className="haven-gps-text">
-              <span className="material-symbols-outlined text-sm">{showingDemoPlaces ? 'science' : 'info'}</span>
-              {showingDemoPlaces && !userLocation.isDemo
-                ? 'Sample listings are around Jaipur, not your current location. Choose the demo location to see nearby sample distances.'
-                : showingDemoPlaces
-                  ? 'Sample Jaipur listings are for preview only; place details and services are not verified.'
-                : userLocation.isDemo
-                  ? 'Showing public map listings around the Jaipur demo location.'
-                  : 'Showing public map listings near your location. Availability may not be current.'}
-            </p>
-            <div className="haven-demo-actions">
-              {!userLocation.isDemo && <button className="haven-gps-demo-btn" onClick={handleUseRealGPS} disabled={requestingGPS}>{requestingGPS ? 'Requesting…' : 'Refresh GPS'}</button>}
-              <button
-                className="haven-gps-demo-btn"
-                onClick={showingDemoPlaces && !onlyDemoPlaceData ? handleShowMappedPlaces : handleSetDemoLocation}
-                disabled={loading || (showingDemoPlaces && onlyDemoPlaceData && userLocation.isDemo)}
-              >
-                {showingDemoPlaces && !onlyDemoPlaceData
-                  ? 'Show mapped places'
-                  : showingDemoPlaces && userLocation.isDemo
-                    ? 'Jaipur demo active'
-                    : showingDemoPlaces
-                      ? 'Use Jaipur demo location'
-                      : 'Use Jaipur demo places'}
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Map Section */}
         <div className="haven-map-card">
           {/* Top floating pill */}
