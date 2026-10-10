@@ -343,7 +343,7 @@ export default function SafeHavens({ onNavigate }) {
           </div>
           <div className="haven-header-titles">
             <div className="haven-brand">
-              <span>Saathi</span>
+              <span>Saarthi++</span>
               <span className="material-symbols-outlined">expand_more</span>
             </div>
             <span className="haven-subtitle">NIGHT GUARDIAN</span>

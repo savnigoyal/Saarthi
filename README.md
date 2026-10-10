@@ -1,4 +1,4 @@
-# WAYSAFE Safe Route Finder
+# Saarthi++ — Safe Route Finder
 
 React + Vite application for reviewing route safety estimates.
 

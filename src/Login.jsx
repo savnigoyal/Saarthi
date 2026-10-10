@@ -105,7 +105,7 @@ export default function Login({ onNavigate }) {
         <div className="lp-left__inner">
           <div className="lp-wordmark">
             <span className="lp-wordmark__dot" aria-hidden="true"/>
-            <span className="lp-wordmark__text">Safe Route</span>
+            <span className="lp-wordmark__text">Saarthi++</span>
           </div>
           <div className="lp-hero">
             <h1 className="lp-hero__headline">A safer way<br/>to get home.</h1>
@@ -125,7 +125,7 @@ export default function Login({ onNavigate }) {
         <div className="lp-form-wrap">
           <div className="lp-wordmark lp-wordmark--mobile">
             <span className="lp-wordmark__dot" aria-hidden="true"/>
-            <span className="lp-wordmark__text">Safe Route</span>
+            <span className="lp-wordmark__text">Saarthi++</span>
           </div>
 
           <div className="lp-form-head">
