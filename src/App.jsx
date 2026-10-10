@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
 import SafeGuardianCircle from './SafeGuardianCircle';
+import GuardianCircle from './GuardianCircle';
+import SafeRouteMap from './SafeRouteMap';
+import SafeHavens from './SafeHavens';
+import VirtualGuardian from './VirtualGuardian';
+import Login from './Login';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
 
   useEffect(() => {
     setCurrentScore(0);
-    const timeout = setTimeout(() => setCurrentScore(targetScore), 150);
+    const timeout = setTimeout(() => setCurrentScore(targetScore ?? 0), 150);
     return () => clearTimeout(timeout);
   }, [targetScore]);
 
@@ -15,16 +20,16 @@ const ScoreRing = ({ score, targetScore }) => {
   const offset = circumference - (circumference * currentScore) / 100;
 
   return (
-    <div className="relative w-48 h-48 my-space-xs flex items-center justify-center mx-auto">
+    <div className="relative w-48 h-48 my-space-xs flex items-center justify-center mx-auto score-ring">
       <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
         <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="68" stroke="currentColor" strokeWidth="12" />
-        <circle 
-          className="transition-all duration-1000 ease-out" 
-          cx="80" cy="80" fill="transparent" r="68" 
-          stroke="url(#teal-glow-grad)" 
-          strokeDasharray="427.26" 
-          strokeDashoffset={offset} 
-          strokeLinecap="round" strokeWidth="12" 
+        <circle
+          className="transition-all duration-1000 ease-out"
+          cx="80" cy="80" fill="transparent" r="68"
+          stroke="url(#teal-glow-grad)"
+          strokeDasharray="427.26"
+          strokeDashoffset={offset}
+          strokeLinecap="round" strokeWidth="12"
         />
         <defs>
           <linearGradient id="teal-glow-grad" x1="0%" x2="100%" y1="0%" y2="100%">
@@ -35,7 +40,7 @@ const ScoreRing = ({ score, targetScore }) => {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
         <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-primary mb-1">
-          <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>shield</span>
+          <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
         </div>
         <div className="flex items-baseline">
           <span className="font-headline-xl text-headline-xl font-bold text-on-surface leading-none tracking-tight">
@@ -51,9 +56,9 @@ const ScoreRing = ({ score, targetScore }) => {
 
 const FactorCard = ({ icon, title, score, colorClass, evidence }) => {
   const [expanded, setExpanded] = useState(false);
-  
+
   return (
-    <div 
+    <div
       className="flex flex-col bg-surface-container-high rounded-lg p-space-sm gap-1.5 cursor-pointer hover:bg-surface-container-highest transition-colors"
       onClick={() => setExpanded(!expanded)}
     >
@@ -83,7 +88,10 @@ export default function App() {
   const [routes, setRoutes] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentView, setCurrentView] = useState('circle'); // 'circle' | 'detail'
+  const [currentTab, setCurrentTab] = useState('login');
+  const [currentView, setCurrentView] = useState('detail');
+  const [showGuardians, setShowGuardians] = useState(false);
+  const [showVirtualGuardian, setShowVirtualGuardian] = useState(false);
 
   useEffect(() => {
     getAlternativeRoutes().then(data => {
@@ -98,20 +106,137 @@ export default function App() {
       <div className="min-h-screen bg-surface flex items-center justify-center text-on-surface">
         <div className="flex flex-col items-center gap-4">
           <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-          <span className="font-label-lg font-bold">Loading Safety Engine Data...</span>
+          <span className="font-label-lg font-bold">Loading Jaipur route demo...</span>
         </div>
       </div>
     );
   }
 
+  if (currentTab === 'login') {
+    return (
+      <Login
+        onNavigate={(tab) => setCurrentTab(tab === 'signup' ? 'login' : tab)}
+        onSignIn={() => setCurrentTab('havens')}
+      />
+    );
+  }
+
+  if (currentTab === 'havens') {
+    return (
+      <SafeHavens
+        onNavigate={(tab) => {
+          if (tab === 'home') {
+            setCurrentTab('home');
+            setShowGuardians(false);
+          } else if (tab === 'guardian') {
+            setCurrentTab('guardian');
+            setShowGuardians(true);
+          } else {
+            setCurrentTab(tab);
+          }
+        }}
+      />
+    );
+  }
+
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
+
+  if (selectedRoute && showVirtualGuardian) {
+    return (
+      <VirtualGuardian
+        onBack={() => setShowVirtualGuardian(false)}
+        onSafety={() => {
+          setShowVirtualGuardian(false);
+          setCurrentTab('guardian');
+        }}
+      />
+    );
+  }
+
+  if ((selectedRoute && showGuardians) || (selectedRoute && currentTab === 'guardian')) {
+    return (
+      <GuardianCircle
+        route={selectedRoute}
+        onBack={() => {
+          setShowGuardians(false);
+          setCurrentTab('havens');
+        }}
+        onVirtualGuardian={() => setShowVirtualGuardian(true)}
+      />
+    );
+  }
+
+  if (selectedRoute?.isCampusDemo) {
+    return (
+      <div className="app-shell campus-demo-shell flex flex-col min-h-screen bg-surface">
+        <header className="sticky top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
+          <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
+            <div className="flex items-center gap-space-xs min-w-0">
+              <button type="button" aria-label="Back to Safe Havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
+                <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+              </button>
+              <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Jaipur Campus Route</h1>
+            </div>
+            <span className="campus-demo-badge"><span className="material-symbols-outlined">route</span>Demo</span>
+          </div>
+          <div className="px-gutter pb-3">
+            <span className="campus-demo-route-pill" aria-current="page">{selectedRoute.name}</span>
+          </div>
+        </header>
+
+        <main className="app-main flex flex-col relative w-full bg-surface flex-1">
+          <div className="app-content campus-demo-content flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
+            <section className="route-intro campus-demo-intro">
+              <div className="eyebrow"><span className="material-symbols-outlined">map</span>Jaipur walking-route demo</div>
+              <h2>Jaipur Junction to Manipal University Jaipur</h2>
+              <p>Try the example below to request a walking route from Jaipur Junction to the MUJ campus in Dehmi Kalan.</p>
+              <div className="route-meta"><span><span className="material-symbols-outlined">pin_drop</span>Jaipur Junction</span><span><span className="material-symbols-outlined">school</span>MUJ · Dehmi Kalan</span></div>
+            </section>
+
+            <SafeRouteMap />
+
+            <aside className="campus-demo-note">
+              <span className="material-symbols-outlined">info</span>
+              <p>Distance and duration come from the public walking router when you load the demo. This route has no safety assessment and may be a long walk. Check the route and transport options before travelling.</p>
+            </aside>
+          </div>
+        </main>
+
+        <div className="campus-demo-actions">
+          <button type="button" onClick={() => setCurrentTab('havens')}><span className="material-symbols-outlined">storefront</span>View Safe Havens</button>
+          <button type="button" onClick={() => { setShowGuardians(true); setCurrentTab('guardian'); }}><span className="material-symbols-outlined">shield</span>Guardian Check-in</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedRoute) {
+    return (
+      <div className="flex flex-col min-h-screen bg-surface">
+        <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
+          <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
+            <div className="flex items-center gap-space-xs min-w-0">
+              <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
+                <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+              </button>
+              <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Haven Detail</h1>
+            </div>
+          </div>
+        </header>
+        <div className="flex-1 flex flex-col items-center justify-center text-on-surface-variant p-gutter text-center">
+          <span className="material-symbols-outlined text-6xl mb-4 text-primary/50">satellite_alt</span>
+          <h2 className="font-headline-md font-bold text-on-surface mb-2">Jaipur demo route unavailable</h2>
+          <p className="font-body-md max-w-sm">No route demo is available right now. Return to Safe Havens and try opening Home again.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'circle') {
     return (
       <div>
-        {/* Navigation Bar for View Toggle */}
         <div className="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur border-b border-surface-container-highest px-gutter py-2 flex items-center justify-between text-xs max-w-lg mx-auto">
-          <button 
+          <button
             onClick={() => setCurrentView('detail')}
             className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-bold"
           >
@@ -124,24 +249,22 @@ export default function App() {
           </span>
         </div>
 
-        <SafeGuardianCircle 
-          selectedRoute={selectedRoute} 
-          onNavigateBack={() => setCurrentView('detail')} 
+        <SafeGuardianCircle
+          selectedRoute={selectedRoute}
+          onNavigateBack={() => setCurrentView('detail')}
         />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-surface selection:bg-primary-container selection:text-on-primary-container">
-      
-      {/* Top View Toggle Bar */}
+    <div className="app-shell flex flex-col min-h-screen bg-surface selection:bg-primary-container selection:text-on-primary-container">
       <div className="sticky top-0 z-[60] bg-surface-container-lowest/90 backdrop-blur border-b border-surface-container-highest px-gutter py-2 flex items-center justify-between text-xs max-w-lg mx-auto">
         <span className="text-primary font-bold flex items-center gap-1">
           <span className="material-symbols-outlined text-sm">shield</span>
           <span>Haven Detail</span>
         </span>
-        <button 
+        <button
           onClick={() => setCurrentView('circle')}
           className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-bold"
         >
@@ -153,7 +276,7 @@ export default function App() {
       <header className="sticky top-[33px] inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
         <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
           <div className="flex items-center gap-space-xs min-w-0">
-            <button className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
+            <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
               <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
             </button>
             <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Haven Detail</h1>
@@ -163,14 +286,14 @@ export default function App() {
               <span className="material-symbols-outlined text-xs">bolt</span>
               <span className="font-label-sm text-label-sm font-bold">Live Safe</span>
             </div>
-            <img alt="Profile" className="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE"/>
+            <img alt="Profile" className="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE" />
           </div>
         </div>
-        {/* Route Selector */}
+
         <div className="px-gutter pb-3 flex gap-2 overflow-x-auto">
           {routes.map(r => (
-            <button 
-              key={r.id} 
+            <button
+              key={r.id}
               onClick={() => setSelectedRouteId(r.id)}
               className={`px-4 py-2 rounded-full whitespace-nowrap font-label-sm font-bold transition-colors ${selectedRouteId === r.id ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
             >
@@ -180,24 +303,37 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex flex-col relative w-full bg-surface flex-1">
-        <div className="flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
-          
-          <div className="flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
+      <main className="app-main flex flex-col relative w-full bg-surface flex-1">
+        <div className="app-content flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
+          <section className="route-intro">
+            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Route inspection</div>
+            <h2>{selectedRoute.name}</h2>
+            <div className="route-meta">
+              <span><span className="material-symbols-outlined">route</span>{selectedRoute.distance}</span>
+              <span><span className="material-symbols-outlined">schedule</span>{selectedRoute.travelTime}</span>
+              <span><span className="material-symbols-outlined">verified</span>{selectedRoute.dataConfidence} confidence</span>
+            </div>
+          </section>
+
+          <SafeRouteMap />
+
+          <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
-            
+
             <ScoreRing score={selectedRoute.weightedScore} targetScore={selectedRoute.weightedScore} />
-            
+
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 text-primary mt-space-xs">
-              <span className="material-symbols-outlined text-sm" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
+              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
               <span className="font-label-sm text-label-sm font-bold">
-                {selectedRoute.weightedScore >= 90 ? 'Exceptionally Safe Night Corridor' : 
-                 selectedRoute.weightedScore >= 70 ? 'Moderate Caution Advised' : 
-                 'High Alert Route'}
+                {selectedRoute.weightedScore >= 90 ? 'Exceptionally Safe Night Corridor' :
+                  selectedRoute.weightedScore >= 70 ? 'Moderate Caution Advised' :
+                    'High Alert Route'}
               </span>
             </div>
-            
-            <div className="flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
+
+            <p className="score-summary">Safety estimate based on mapped lighting, nearby activity, police proximity, safe havens, and available incident data.</p>
+
+            <div className="score-duplicate-meta flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-base text-primary">route</span> {selectedRoute.distance}
               </span>
@@ -212,13 +348,19 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
+          <details className="why-score">
+            <summary><span><span className="material-symbols-outlined">auto_awesome</span><span><strong>Why this score?</strong><small>How the route estimate is calculated</small></span></span><span className="material-symbols-outlined">expand_more</span></summary>
+            <p>The score combines five weighted factors: street lighting (25%), estimated pedestrian activity (20%), police and CCTV proximity (15%), safe havens (15%), and historical incident safety (25%). Values come from mapped data and estimates; historical incident data is provisional, and live sensors or verified CCTV coverage are not connected.</p>
+            <div className="why-note"><span className="material-symbols-outlined">info</span>Use this estimate as guidance, not a safety guarantee.</div>
+          </details>
+
+          <div className="factor-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">tune</span>
                 <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Safety Factor Breakdown</h3>
               </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">Tap to expand</span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">5 factors</span>
             </div>
             <div className="flex flex-col gap-space-sm">
               <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={selectedRoute.parameters.lighting.score} colorClass="text-primary" evidence={selectedRoute.parameters.lighting.evidence} />
@@ -229,7 +371,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
+          <div className="segment-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">alt_route</span>
@@ -237,7 +379,7 @@ export default function App() {
               </div>
               <span className="font-label-sm text-label-sm text-on-surface-variant">{selectedRoute.segments.length} Stages</span>
             </div>
-            
+
             <div className="relative flex flex-col gap-space-md">
               {selectedRoute.segments.map((seg, idx) => (
                 <div key={seg.id} className="flex gap-space-sm items-start relative">
@@ -267,9 +409,9 @@ export default function App() {
               ))}
             </div>
           </div>
-          
+
           {selectedRoute.review && (
-            <div className="flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
+            <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
               <div className="flex flex-col min-w-0">
                 <span className="font-label-md text-label-md font-bold text-on-surface">Walked by {selectedRoute.review.user} {selectedRoute.review.timeAgo}</span>
@@ -280,13 +422,20 @@ export default function App() {
         </div>
       </main>
 
-      <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl">
-        <button 
-          onClick={() => setCurrentView('circle')}
-          className="w-full max-w-lg mx-auto h-14 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
+      <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl flex flex-col gap-2 max-w-lg mx-auto">
+        <button
+          onClick={() => {
+            setShowGuardians(true);
+            setCurrentTab('guardian');
+          }}
+          className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
         >
-          <span>Proceed with {selectedRoute.name}</span>
+          <span>Proceed with this safe route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
+        </button>
+        <button onClick={() => setCurrentTab('havens')} className="w-full h-10 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">
+          <span className="material-symbols-outlined text-base">storefront</span>
+          <span>View Nearby Safe Havens</span>
         </button>
       </div>
     </div>

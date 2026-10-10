@@ -1,16 +1,24 @@
-# React + Vite
+# Saarthi++ — Safe Route Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + Vite application for reviewing route safety estimates.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Run `npm install`, then `npm run dev` to start the local development server.
 
-## React Compiler
+## Build
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Run `npm run build`, then serve the generated `dist/` directory on a static host.
 
-## Expanding the Oxlint configuration
+## Google Maps Embed setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+The route detail screen uses the Maps Embed API in a responsive, lazy-loaded iframe. To enable it:
+
+1. Create or select a Google Cloud project and enable billing for it. Google currently lists Maps Embed API requests as no-charge, but a billing account is still required.
+2. Enable **Maps Embed API** and create an API key.
+3. Restrict the key to the Maps Embed API and to the websites that host this app (HTTP referrer restrictions).
+4. Create `.env.local` in this project directory with `VITE_GOOGLE_MAPS_EMBED_API_KEY=your_key`, then restart Vite.
+
+Vite exposes variables beginning with `VITE_` in the browser bundle. This key is therefore visible to users; it is not a server-side secret and must be restricted in Google Cloud. Without a configured key, the page shows setup guidance and the Open in Google Maps fallback remains available.
+
+Location is requested only after the user selects **Use my location**. A destination can be searched without location; walking directions require both a destination and the real location returned by the browser. The Embed API displays the map and route, but this app does not receive structured route distance or duration from the iframe. Use a separate supported routing API only if the product needs those exact values. Map content is provided by Google and retains Google's attribution and controls.

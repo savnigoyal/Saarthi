@@ -1,0 +1,68 @@
+{
+  "type": "FeatureCollection",
+  "name": "hospitals",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 40192801,
+        "name": "Green Cross Emergency & Trauma Bay",
+        "amenity": "hospital",
+        "emergency": "yes",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2378900",
+        "addr:street": "Emergency Gate 3, C-Scheme",
+        "addr:city": "Jaipur",
+        "healthcare": "hospital",
+        "wheelchair": "yes"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7920, 26.9050] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 40192802,
+        "name": "SMS Government Hospital & Trauma Centre",
+        "amenity": "hospital",
+        "emergency": "yes",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2560291",
+        "addr:street": "JLN Marg, Ashok Nagar",
+        "addr:city": "Jaipur",
+        "healthcare": "hospital"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.8160, 26.8930] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 40192803,
+        "name": "Santokba Durlabhji Memorial Hospital (SDMH)",
+        "amenity": "hospital",
+        "emergency": "yes",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2566251",
+        "addr:street": "Bhawani Singh Road, Bapu Nagar",
+        "addr:city": "Jaipur",
+        "healthcare": "hospital"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.8020, 26.8950] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": 40192804,
+        "name": "Zanana Hospital Emergency Wing",
+        "amenity": "hospital",
+        "emergency": "yes",
+        "opening_hours": "24/7",
+        "phone": "+91-141-2200450",
+        "addr:street": "Station Road, Chandpole",
+        "addr:city": "Jaipur",
+        "healthcare": "hospital"
+      },
+      "geometry": { "type": "Point", "coordinates": [75.7990, 26.9250] }
+    }
+  ]
+}
