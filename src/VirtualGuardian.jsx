@@ -11,7 +11,7 @@ export default function VirtualGuardian() {
   }
 
   return <main style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', padding: 24, boxSizing: 'border-box', background: '#080f1f' }}>
-    {!started && <button type="button" onClick={startVideo} style={{ padding: '14px 42px', border: 0, borderRadius: 28, background: '#57f1db', color: '#09201f', fontSize: 16, fontWeight: 800, cursor: 'pointer' }}>Start</button>}
+    {!started && <button type="button" onClick={startVideo} style={{ padding: '14px 42px', border: 0, borderRadius: 28, background: '#57f1db', color: '#09201f', fontSize: 16, fontWeight: 800, cursor: 'pointer' }}>Play safety video</button>}
     <video
       ref={videoRef}
       controls={started}
