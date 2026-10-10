@@ -1161,7 +1161,7 @@
   .haven-screen { width: min(calc(100% - 64px), 1220px); max-width: none; min-height: calc(100dvh - 48px); margin: 24px auto; border: 1px solid #252d40; border-radius: 20px; overflow: visible; box-shadow: 0 18px 60px #0006; }
   .haven-header { min-height: 72px; padding: 14px 28px; border-radius: 20px 20px 0 0; }
   .haven-brand { font-size: 20px; }
-  .haven-content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(340px, .9fr); align-content: start; align-items: start; gap: 16px 22px; padding: 22px 28px 130px; }
+  .haven-content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(340px, .9fr); align-content: start; align-items: start; gap: 16px 22px; padding: 22px 28px 28px; }
   .haven-search-tools, .haven-filter-scroll, .haven-gps-banner, .haven-suggest-card { grid-column: 1 / -1; }
   .haven-gps-banner { grid-row: 3; }
   .haven-map-card { grid-column: 1; grid-row: 4 / span 3; height: min(62vh, 660px); min-height: 440px; }
@@ -1171,7 +1171,7 @@
   .haven-filter-scroll { flex-wrap: wrap; overflow: visible; }
   .haven-filter-pill { min-height: 42px; }
   .haven-card { padding: 15px; }
-  .haven-bottom-nav { left: 50%; right: auto; bottom: 0; width: min(calc(100% - 64px), 1220px); max-width: none; transform: translateX(-50%); border: 1px solid #ffffff12; border-radius: 16px 16px 0 0; }
+  .haven-bottom-nav { position: relative; inset: auto; width: 100%; max-width: none; margin-top: auto; transform: none; border: 1px solid #ffffff12; border-radius: 16px 16px 0 0; }
   .haven-nav-item { min-height: 48px; font-size: 11px; }
 }
 
