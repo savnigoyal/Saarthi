@@ -4,6 +4,8 @@ import './GuardianCircleResponsive.css';
 
 const DEFAULT_GUARDIANS = [
   { id: 'mom', name: 'Maa (Mom)', relationship: 'Mom', phone: '', online: true, primary: true, selected: true, avatar: '👩🏽' },
+  { id: 'mummy', name: 'Mummy', relationship: 'Mom', phone: '', online: true, primary: false, selected: true, avatar: '👩🏻' },
+  { id: 'papa', name: 'Papa', relationship: 'Dad', phone: '', online: true, primary: false, selected: true, avatar: '👨🏻' },
   { id: 'rhea', name: 'Rhea (Roommate)', relationship: 'Roommate', phone: '', online: true, primary: false, selected: true, avatar: '👩🏻' },
   { id: 'arjun', name: 'Arjun (Brother)', relationship: 'Brother', phone: '', online: false, primary: false, selected: false, avatar: '👨🏽' },
   { id: 'security', name: 'Campus Security Desk', relationship: 'Security', phone: '', online: true, primary: false, selected: false, avatar: '✦' },
@@ -13,6 +15,14 @@ const DEMO_ROUTE = { routeName: 'Saathi Safe Route', destination: 'Oakridge Girl
 
 function readStorage(key, fallback) {
   try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; }
+}
+function loadGuardians() {
+  const stored = readStorage('saferoute.guardians', DEFAULT_GUARDIANS);
+  const existingIds = new Set(stored.map(guardian => guardian.id));
+  const additions = DEFAULT_GUARDIANS.filter(guardian => ['mummy', 'papa'].includes(guardian.id) && !existingIds.has(guardian.id));
+  const rheaIndex = stored.findIndex(guardian => guardian.id === 'rhea');
+  stored.splice(rheaIndex < 0 ? stored.length : rheaIndex, 0, ...additions);
+  return stored;
 }
 function makeId() { return `SAFE-${Math.random().toString(36).slice(2, 8).toUpperCase()}`; }
 function getCurrentRouteData(route) {
@@ -41,7 +51,7 @@ function checkRouteDeviation(currentLocation, plannedRoute) {
 }
 
 export default function GuardianCircle({ route, onBack, onVirtualGuardian }) {
-  const [guardians, setGuardians] = useState(() => readStorage('saferoute.guardians', DEFAULT_GUARDIANS));
+  const [guardians, setGuardians] = useState(loadGuardians);
   const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, ...readStorage('saferoute.monitoring', {}) }));
   const [journey, setJourney] = useState({ active: false, trackingId: null, startedAt: null, latitude: null, longitude: null, accuracy: null, eta: null, destination: null, routeName: null, safetyScore: null, completed: false, deviation: false, gpsStatus: 'idle' });
   const [modal, setModal] = useState(false);
