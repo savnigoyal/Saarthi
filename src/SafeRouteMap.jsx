@@ -180,12 +180,19 @@ export default function SafeRouteMap() {
     setRoute(null);
     setRouteMessage('');
     try {
-      const params = new URLSearchParams({ q: value, format: 'jsonv2', limit: '1' });
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
-      if (response.status === 429) throw new Error('Place search is rate limited. Please wait before searching again.');
-      if (!response.ok) throw new Error('Place search is temporarily unavailable. Please try again later.');
-      const results = await response.json();
-      if (!results.length) throw new Error('No matching place was found. Try a more specific address.');
+      let results = [];
+      for (const query of [value, `${value}, India`]) {
+        const params = new URLSearchParams({ q: query, format: 'jsonv2', limit: '1' });
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+        if (response.status === 429) throw new Error('Place search is rate limited. Please wait before searching again.');
+        if (!response.ok) throw new Error('Place search is temporarily unavailable. Please try again later.');
+        results = await response.json();
+        if (results.length) break;
+      }
+      if (!results.length) {
+        setMapOpen(true);
+        throw new Error('No matching place was found. Try adding the city, or tap the map below to choose a point.');
+      }
       const result = results[0];
       setDestination({ latitude: Number(result.lat), longitude: Number(result.lon), label: result.display_name });
       setMapOpen(true);
@@ -217,8 +224,8 @@ export default function SafeRouteMap() {
         <button type="submit" className="safe-map-submit" disabled={searching}>{searching ? 'Searching…' : 'Find place'}</button>
       </form>
       <button type="button" className="safe-map-demo" onClick={loadJaipurCampusDemo}>Try Jaipur demo: Jaipur Junction → MUJ</button>
-      <p className="safe-map-demo-note">Uses an example start point and the MUJ campus. Route distance and time are requested live; this demo does not assess safety and may be a long walk.</p>
-      {destinationError && <p className="safe-map-error" role="alert">{destinationError}</p>}
+      <p className="safe-map-demo-note">The map planner is separate from the sample scored routes above. Live place search and route lookup may be unavailable; map-planned routes do not get a safety score.</p>
+        {destinationError && <p className="safe-map-error" role="alert">{destinationError}</p>}
 
       {!mapOpen ? (
         <button className="safe-map-launch" type="button" onClick={() => setMapOpen(true)}>

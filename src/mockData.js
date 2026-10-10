@@ -41,7 +41,7 @@ export const mockRoutes = [
     name: "Via MI Road & Sansar Chandra Marg",
     distance: "3.1 km",
     travelTime: "24 min walk",
-    dataConfidence: "High",
+    dataConfidence: "Sample",
     isDemoData: true,
 
     parameters: {
@@ -136,7 +136,7 @@ export const mockRoutes = [
     name: "Short Cut via Ramganj Bazar Lane",
     distance: "1.8 km",
     travelTime: "14 min walk",
-    dataConfidence: "Medium",
+    dataConfidence: "Sample",
     isDemoData: true,
 
     parameters: {
@@ -229,7 +229,7 @@ export const mockRoutes = [
     name: "Outer Ring via Vidhan Sabha Marg",
     distance: "4.6 km",
     travelTime: "36 min walk",
-    dataConfidence: "High",
+    dataConfidence: "Sample",
     isDemoData: true,
 
     parameters: {

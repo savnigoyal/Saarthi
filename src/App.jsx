@@ -311,7 +311,7 @@ export default function App() {
           <div className="flex items-center gap-space-sm shrink-0">
             <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-primary">
               <span className="material-symbols-outlined text-xs">bolt</span>
-              <span className="font-label-sm text-label-sm font-bold">Live Safe</span>
+              <span className="font-label-sm text-label-sm font-bold">Demo data</span>
             </div>
             <img alt="Profile" className="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE" />
           </div>
@@ -324,7 +324,7 @@ export default function App() {
               onClick={() => setSelectedRouteId(r.id)}
               className={`px-4 py-2 rounded-full whitespace-nowrap font-label-sm font-bold transition-colors ${selectedRouteId === r.id ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
             >
-              {r.name}
+              {r.name} · {Math.round(r.weightedScore)}/100
             </button>
           ))}
         </div>
@@ -333,16 +333,14 @@ export default function App() {
       <main className="app-main flex flex-col relative w-full bg-surface flex-1">
         <div className="app-content flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
           <section className="route-intro">
-            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Route inspection</div>
+            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Sample route comparison · demo scores</div>
             <h2>{selectedRoute.name}</h2>
             <div className="route-meta">
               <span><span className="material-symbols-outlined">route</span>{selectedRoute.distance}</span>
               <span><span className="material-symbols-outlined">schedule</span>{selectedRoute.travelTime}</span>
-              <span><span className="material-symbols-outlined">verified</span>{selectedRoute.dataConfidence} confidence</span>
+              <span><span className="material-symbols-outlined">science</span>{selectedRoute.dataConfidence} data</span>
             </div>
           </section>
-
-          <SafeRouteMap />
 
           <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
@@ -350,15 +348,13 @@ export default function App() {
             <ScoreRing score={selectedRoute.weightedScore} targetScore={selectedRoute.weightedScore} />
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 text-primary mt-space-xs">
-              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <span className="material-symbols-outlined text-sm">science</span>
               <span className="font-label-sm text-label-sm font-bold">
-                {selectedRoute.weightedScore >= 90 ? 'Exceptionally Safe Night Corridor' :
-                  selectedRoute.weightedScore >= 70 ? 'Moderate Caution Advised' :
-                    'High Alert Route'}
+                {selectedRoute.weightedScore >= 90 ? 'Highest sample score' : selectedRoute.weightedScore >= 70 ? 'Mid range sample score' : 'Lowest sample score'}
               </span>
             </div>
 
-            <p className="score-summary">Safety estimate based on mapped lighting, nearby activity, police proximity, safe havens, and available incident data.</p>
+            <p className="score-summary">Illustrative demo score from sample route factors. This is not a live or verified safety assessment.</p>
 
             <div className="score-duplicate-meta flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
               <span className="flex items-center gap-1">
@@ -370,7 +366,7 @@ export default function App() {
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-base text-primary">verified</span> {selectedRoute.dataConfidence} Confidence
+                <span className="material-symbols-outlined text-base text-primary">science</span> {selectedRoute.dataConfidence} Data
               </span>
             </div>
           </div>
@@ -437,6 +433,8 @@ export default function App() {
             </div>
           </div>
 
+          <SafeRouteMap />
+
           {selectedRoute.review && (
             <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
@@ -457,7 +455,7 @@ export default function App() {
           }}
           className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
         >
-          <span>Proceed with this safe route</span>
+          <span>Continue with sample route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
         </button>
         <button onClick={() => setCurrentTab('havens')} className="w-full h-10 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">

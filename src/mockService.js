@@ -1,10 +1,13 @@
-import { jaipurCampusDemoRoute } from './mockData';
+import { mockRoutes } from './mockData';
+import SafetyEngine from './safetyEngine';
+
+const safetyEngine = new SafetyEngine();
 
 export const getAlternativeRoutes = async () => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 600));
   
-  // Show the campus demo in the home route panel. The map requests live route
-  // geometry, distance and duration; safety scores remain unavailable.
-  return [jaipurCampusDemoRoute];
+  // Route options and factor scores are sample data for the Jaipur demo.
+  // Keep the weighted formula identical to the production scoring engine.
+  return mockRoutes.map((route) => safetyEngine.evaluateRoute(route));
 };
