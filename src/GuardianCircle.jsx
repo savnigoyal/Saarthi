@@ -157,7 +157,7 @@ export default function GuardianCircle({ route, onBack, onVirtualGuardian }) {
   const message = generateGuardianMessage();
 
   return <div className="guardian-shell">
-    <header className="guardian-header"><button onClick={onBack} aria-label="Back"><span className="material-symbols-outlined">arrow_back_ios_new</span></button><h1>Haven Detail</h1><span className="guardian-live"><i />{journey.active ? 'Journey Active' : route?.isCampusDemo ? 'Map Demo' : 'Live Safe'}</span><div className="guardian-profile">A</div></header>
+    <header className="guardian-header"><button onClick={onBack} aria-label="Back"><span className="material-symbols-outlined">arrow_back_ios_new</span></button><h1>Saarthi++</h1><span className="guardian-live"><i />{journey.active ? 'Journey Active' : route?.isCampusDemo ? 'Map Demo' : 'Live Safe'}</span><div className="guardian-profile">A</div></header>
     <main className="guardian-content">
       <div className="guardian-eyebrow"><span className="material-symbols-outlined">verified_user</span>Pre-journey checkpoint</div>
       <h2>Safe Guardian Circle</h2><p className="guardian-subtitle">Who should look out for you tonight?</p>
