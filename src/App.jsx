@@ -215,6 +215,11 @@ export default function App() {
               <div className="route-meta"><span><span className="material-symbols-outlined">pin_drop</span>Jaipur Junction</span><span><span className="material-symbols-outlined">school</span>MUJ · Dehmi Kalan</span></div>
             </section>
 
+            <div className="campus-safety-score" role="status">
+              <span className="material-symbols-outlined">shield</span>
+              <span><strong>Safety score: Not assessed</strong><small>This route demo has no verified safety data.</small></span>
+            </div>
+
             <SafeRouteMap />
 
             <aside className="campus-demo-note">
