@@ -868,9 +868,12 @@
 
 /* Bottom Navigation Bar */
 .haven-bottom-nav {
-  position: static;
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 50;
   max-width: 480px;
-  margin: 0 auto;
+  transform: translateX(-50%);
   width: 100%;
   background: rgba(11, 19, 38, 0.94);
   backdrop-filter: blur(16px);
@@ -879,7 +882,7 @@
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  box-shadow: none;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
 }
 
 .haven-nav-item {
@@ -1169,7 +1172,7 @@
   .haven-filter-scroll { flex-wrap: wrap; overflow: visible; }
   .haven-filter-pill { min-height: 42px; }
   .haven-card { padding: 15px; }
-  .haven-bottom-nav { position: relative; inset: auto; width: 100%; max-width: none; margin-top: auto; transform: none; border: 1px solid #ffffff12; border-radius: 16px 16px 0 0; }
+  .haven-bottom-nav { left: 50%; right: auto; bottom: 0; width: min(calc(100% - 52px), 1822px); max-width: none; margin: 0; transform: translateX(-50%); border: 1px solid #ffffff12; border-radius: 16px 16px 0 0; }
   .haven-nav-item { min-height: 48px; font-size: 11px; }
 }
 
