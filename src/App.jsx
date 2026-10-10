@@ -4,6 +4,7 @@ import GuardianCircle from './GuardianCircle';
 import SafeRouteMap from './SafeRouteMap';
 import SafeHavens from './SafeHavens';
 import VirtualGuardian from './VirtualGuardian';
+import Login from './Login';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -88,7 +89,7 @@ export default function App() {
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showGuardians, setShowGuardians] = useState(false);
-  const [currentTab, setCurrentTab] = useState('havens');
+  const [currentTab, setCurrentTab] = useState('login');
   const [showVirtualGuardian, setShowVirtualGuardian] = useState(false);
 
   useEffect(() => {
@@ -107,6 +108,15 @@ export default function App() {
           <span className="font-label-lg font-bold">Loading Jaipur route demo...</span>
         </div>
       </div>
+    );
+  }
+
+  if (currentTab === 'login') {
+    return (
+      <Login
+        onNavigate={(tab) => setCurrentTab(tab === 'signup' ? 'login' : tab)}
+        onSignIn={() => setCurrentTab('havens')}
+      />
     );
   }
 
