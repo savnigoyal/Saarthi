@@ -20,8 +20,8 @@ function getCurrentRouteData(route) {
   return {
     routeName: route?.name || DEMO_ROUTE.routeName,
     destination: route?.destination || DEMO_ROUTE.destination,
-    eta: route?.eta || calculatedEta || DEMO_ROUTE.eta,
-    safetyScore: Number(route?.weightedScore ?? 92),
+    eta: route?.isCampusDemo ? null : route?.eta || calculatedEta || DEMO_ROUTE.eta,
+    safetyScore: route?.isCampusDemo ? null : Number(route?.weightedScore ?? 92),
     plannedRoute: route?.geometry || route?.coordinates || null,
   };
 }
@@ -104,7 +104,7 @@ export default function GuardianCircle({ route, onBack }) {
     if (settings.shareETA) etaTimer.current = setInterval(() => {}, 60000);
     startEmergencyMonitoring();
     const startLink = `saathi.safe/track/${trackingId}`;
-    const startMessage = [`🛡️ Anushka has started her night walk to ${routeData.destination} via ${routeName}.`, `Safety Score: ${score}/100`, ...(settings.shareETA ? [`ETA: ${routeData.eta}`] : []), settings.shareGPS ? 'Live location sharing is starting on this device.' : 'Live location sharing is paused.', ...(settings.routeDeviationAlert ? ['Route deviation alert (>100m) enabled; route data unavailable.'] : []), `Track journey:\n${startLink}`].join('\n\n');
+    const startMessage = [`🛡️ Anushka has started her night walk to ${routeData.destination} via ${routeName}.`, score == null ? 'Safety assessment is not available for this route.' : `Safety Score: ${score}/100`, ...(settings.shareETA && routeData.eta ? [`ETA: ${routeData.eta}`] : []), settings.shareGPS ? 'Live location sharing is starting on this device.' : 'Live location sharing is paused.', ...(settings.routeDeviationAlert ? ['Route deviation alert (>100m) enabled; route data unavailable.'] : []), `Track journey:\n${startLink}`].join('\n\n');
     if (navigator.share) navigator.share({ title: 'SafeRoute journey', text: startMessage }).catch(error => { if (error.name !== 'AbortError') setNotice('Journey active. Sharing did not complete; you can copy the preview below.'); });
   }
   function completeSafeJourney() {
@@ -116,7 +116,7 @@ export default function GuardianCircle({ route, onBack }) {
     if (window.confirm('End this Safe Journey and stop location sharing?')) completeSafeJourney();
   }
   function generateGuardianMessage() {
-    if (!journey.trackingId) return `🛡️ Anushka is preparing for her night walk to ${routeData.destination} via ${routeName}.\n\nSafety Score: ${score}/100.`;
+    if (!journey.trackingId) return `🛡️ Anushka is preparing for her night walk to ${routeData.destination} via ${routeName}.\n\n${score == null ? 'Safety assessment is not available for this route.' : `Safety Score: ${score}/100.`}`;
     if (journey.completed) return `✅ Anushka has arrived safely at ${journey.destination}.\n\nLocation sharing has stopped.`;
     const locationStatus = settings.shareGPS && journey.gpsStatus === 'active'
       ? 'Live location sharing is active on this device.'
@@ -128,8 +128,8 @@ export default function GuardianCircle({ route, onBack }) {
         : 'Route deviation alert (>100m) enabled; route data unavailable.';
     return [
       `🛡️ Anushka has started her night walk to ${journey.destination} via ${journey.routeName}.`,
-      `Safety Score: ${journey.safetyScore}/100`,
-      settings.shareETA ? `ETA: ${journey.eta}` : null,
+      journey.safetyScore == null ? 'Safety assessment is not available for this route.' : `Safety Score: ${journey.safetyScore}/100`,
+      settings.shareETA && journey.eta ? `ETA: ${journey.eta}` : null,
       locationStatus,
       deviationStatus,
       journey.deviation ? 'Route deviation detected. Please check in with Anushka.' : null,
@@ -156,11 +156,11 @@ export default function GuardianCircle({ route, onBack }) {
   const message = generateGuardianMessage();
 
   return <div className="guardian-shell">
-    <header className="guardian-header"><button onClick={onBack} aria-label="Back"><span className="material-symbols-outlined">arrow_back_ios_new</span></button><h1>Haven Detail</h1><span className="guardian-live"><i />{journey.active ? 'Journey Active' : 'Live Safe'}</span><div className="guardian-profile">A</div></header>
+    <header className="guardian-header"><button onClick={onBack} aria-label="Back"><span className="material-symbols-outlined">arrow_back_ios_new</span></button><h1>Haven Detail</h1><span className="guardian-live"><i />{journey.active ? 'Journey Active' : route?.isCampusDemo ? 'Map Demo' : 'Live Safe'}</span><div className="guardian-profile">A</div></header>
     <main className="guardian-content">
       <div className="guardian-eyebrow"><span className="material-symbols-outlined">verified_user</span>Pre-journey checkpoint</div>
       <h2>Safe Guardian Circle</h2><p className="guardian-subtitle">Who should look out for you tonight?</p>
-      <section className="guardian-route"><div className="route-pin">▲</div><div className="route-copy"><strong>{routeData.destination}<i /></strong><span>{route?.distance || 'Safe route'} • <b>{eta}</b></span></div><span className="route-score">♥ {score} Safe</span></section>
+      <section className="guardian-route"><div className="route-pin">▲</div><div className="route-copy"><strong>{routeData.destination}<i /></strong><span>{route?.distance || (route?.isCampusDemo ? 'Load the live route from the map' : 'Safe route')} • <b>{eta || 'ETA unavailable'}</b></span></div><span className="route-score">{score == null ? 'Not assessed' : `♥ ${score} Safe`}</span></section>
 
       <section className="guardian-section"><div className="guardian-section-title"><h3>Active Sentinels</h3><span className="selected-count">{updateGuardianCount()}</span><small>Tap to notify</small></div>
         <div className="guardian-list">{guardians.map(guardian => <label className={`guardian-card ${guardian.selected ? 'is-selected' : ''}`} key={guardian.id}>

@@ -306,3 +306,20 @@ export const mockRoutes = [
   }
 
 ];
+
+// Demo-only route scenario. Distance, duration and geometry are loaded from
+// the walking router; no safety score or street-condition claims are attached.
+export const jaipurCampusDemoRoute = {
+  id: 'jaipur-muj-demo',
+  name: 'Jaipur Junction → Manipal University Jaipur',
+  origin: 'Jaipur Junction (demo start)',
+  destination: 'Manipal University Jaipur campus, Dehmi Kalan',
+  distance: 'Load route on map',
+  travelTime: 'Load route on map',
+  dataConfidence: 'Routing demo',
+  isCampusDemo: true,
+  weightedScore: null,
+  parameters: null,
+  segments: [],
+  review: null,
+};

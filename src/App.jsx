@@ -102,7 +102,7 @@ export default function App() {
       <div className="min-h-screen bg-surface flex items-center justify-center text-on-surface">
         <div className="flex flex-col items-center gap-4">
           <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-          <span className="font-label-lg font-bold">Loading Safety Engine Data...</span>
+          <span className="font-label-lg font-bold">Loading Jaipur route demo...</span>
         </div>
       </div>
     );
@@ -131,6 +131,50 @@ export default function App() {
   if ((selectedRoute && showGuardians) || (selectedRoute && currentTab === 'guardian')) {
     return <GuardianCircle route={selectedRoute} onBack={() => { setShowGuardians(false); setCurrentTab('havens'); }} />;
   }
+
+  if (selectedRoute?.isCampusDemo) {
+    return (
+      <div className="app-shell campus-demo-shell flex flex-col min-h-screen bg-surface">
+        <header className="sticky top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
+          <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
+            <div className="flex items-center gap-space-xs min-w-0">
+              <button type="button" aria-label="Back to Safe Havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
+                <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+              </button>
+              <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Jaipur Campus Route</h1>
+            </div>
+            <span className="campus-demo-badge"><span className="material-symbols-outlined">route</span>Demo</span>
+          </div>
+          <div className="px-gutter pb-3">
+            <span className="campus-demo-route-pill" aria-current="page">{selectedRoute.name}</span>
+          </div>
+        </header>
+
+        <main className="app-main flex flex-col relative w-full bg-surface flex-1">
+          <div className="app-content campus-demo-content flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
+            <section className="route-intro campus-demo-intro">
+              <div className="eyebrow"><span className="material-symbols-outlined">map</span>Jaipur walking-route demo</div>
+              <h2>Jaipur Junction to Manipal University Jaipur</h2>
+              <p>Try the example below to request a walking route from Jaipur Junction to the MUJ campus in Dehmi Kalan.</p>
+              <div className="route-meta"><span><span className="material-symbols-outlined">pin_drop</span>Jaipur Junction</span><span><span className="material-symbols-outlined">school</span>MUJ · Dehmi Kalan</span></div>
+            </section>
+
+            <SafeRouteMap />
+
+            <aside className="campus-demo-note">
+              <span className="material-symbols-outlined">info</span>
+              <p>Distance and duration come from the public walking router when you load the demo. This route has no safety assessment and may be a long walk. Check the route and transport options before travelling.</p>
+            </aside>
+          </div>
+        </main>
+
+        <div className="campus-demo-actions">
+          <button type="button" onClick={() => setCurrentTab('havens')}><span className="material-symbols-outlined">storefront</span>View Safe Havens</button>
+          <button type="button" onClick={() => { setShowGuardians(true); setCurrentTab('guardian'); }}><span className="material-symbols-outlined">shield</span>Guardian Check-in</button>
+        </div>
+      </div>
+    );
+  }
   
   if (!selectedRoute) {
     return (
@@ -147,8 +191,8 @@ export default function App() {
         </header>
         <div className="flex-1 flex flex-col items-center justify-center text-on-surface-variant p-gutter text-center">
           <span className="material-symbols-outlined text-6xl mb-4 text-primary/50">satellite_alt</span>
-          <h2 className="font-headline-md font-bold text-on-surface mb-2">Awaiting Telemetry Data</h2>
-          <p className="font-body-md max-w-sm">No route candidates are currently available. Please submit a route request to receive a safety score assessment.</p>
+          <h2 className="font-headline-md font-bold text-on-surface mb-2">Jaipur demo route unavailable</h2>
+          <p className="font-body-md max-w-sm">No route demo is available right now. Return to Safe Havens and try opening Home again.</p>
         </div>
       </div>
     );
