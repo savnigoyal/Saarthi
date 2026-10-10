@@ -189,11 +189,22 @@ body { background: #080d19; }
 
 @media (min-width: 700px) {
   .app-content { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); align-content: start; align-items: start; }
-  .route-intro, .segment-section, .review-card { grid-column: 1 / -1; }
+  .route-intro, .safe-map-card, .segment-section, .review-card { grid-column: 1 / -1; }
   .score-card, .why-score { grid-column: 1; }
-  .factor-section { grid-column: 2; grid-row: 2 / span 2; }
-  .segment-section { grid-row: 4; }
-  .review-card { grid-row: 5; }
+  .factor-section { grid-column: 2; grid-row: 4 / span 2; }
+  .segment-section { grid-row: 6; }
+  .review-card { grid-row: 7; }
+}
+
+/* Laptop layout: use the wider canvas for map context and easier actions. */
+@media (min-width: 900px) {
+  .app-shell > header > div:first-child,
+  .app-shell > header > div:nth-child(2) { max-width: none; }
+  .app-content { grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr); }
+  .safe-map-card { min-height: 100%; }
+  .safe-map-frame { height: clamp(340px, 34vw, 470px); }
+  .app-shell > .fixed.bottom-0 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .app-shell > .fixed.bottom-0 button { height: 52px; }
 }
 
 @media (min-width: 1024px) {
