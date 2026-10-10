@@ -3,6 +3,7 @@ import { getAlternativeRoutes } from './mockService';
 import GuardianCircle from './GuardianCircle';
 import SafeRouteMap from './SafeRouteMap';
 import SafeHavens from './SafeHavens';
+import VirtualGuardian from './VirtualGuardian';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -88,6 +89,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [showGuardians, setShowGuardians] = useState(false);
   const [currentTab, setCurrentTab] = useState('havens');
+  const [showVirtualGuardian, setShowVirtualGuardian] = useState(false);
 
   useEffect(() => {
     getAlternativeRoutes().then(data => {
@@ -128,8 +130,12 @@ export default function App() {
 
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
 
+  if (selectedRoute && showVirtualGuardian) {
+    return <VirtualGuardian onBack={() => setShowVirtualGuardian(false)} onSafety={() => setShowVirtualGuardian(false)} />;
+  }
+
   if ((selectedRoute && showGuardians) || (selectedRoute && currentTab === 'guardian')) {
-    return <GuardianCircle route={selectedRoute} onBack={() => { setShowGuardians(false); setCurrentTab('havens'); }} />;
+    return <GuardianCircle route={selectedRoute} onBack={() => { setShowGuardians(false); setCurrentTab('havens'); }} onVirtualGuardian={() => setShowVirtualGuardian(true)} />;
   }
 
   if (selectedRoute?.isCampusDemo) {

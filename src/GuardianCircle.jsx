@@ -39,7 +39,7 @@ function checkRouteDeviation(currentLocation, plannedRoute) {
   return Math.min(...plannedRoute.slice(1).map((point, index) => distanceToSegment(currentLocation, plannedRoute[index], point))) > 100;
 }
 
-export default function GuardianCircle({ route, onBack }) {
+export default function GuardianCircle({ route, onBack, onVirtualGuardian }) {
   const [guardians, setGuardians] = useState(() => readStorage('saferoute.guardians', DEFAULT_GUARDIANS));
   const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, ...readStorage('saferoute.monitoring', {}) }));
   const [journey, setJourney] = useState({ active: false, trackingId: null, startedAt: null, latitude: null, longitude: null, accuracy: null, eta: null, destination: null, routeName: null, safetyScore: null, completed: false, deviation: false, gpsStatus: 'idle' });
@@ -168,6 +168,10 @@ export default function GuardianCircle({ route, onBack }) {
           <input type="checkbox" checked={!!guardian.selected} onChange={e => setGuardians(current => current.map(item => item.id === guardian.id ? { ...item, selected: e.target.checked } : item))} aria-label={`Select ${guardian.name}`} />
         </label>)}</div>
         <button className="add-guardian" onClick={() => setModal(true)}><span className="material-symbols-outlined">person_add</span>+ Add New Trusted Guardian</button>
+      </section>
+
+      <section className="guardian-section"><div className="guardian-section-title"><h3>Virtual Guardian</h3><small>Simulated voice check-in</small></div>
+        <button className="add-guardian" onClick={onVirtualGuardian}><span className="material-symbols-outlined">call</span>Start a Simulated Safety Call</button>
       </section>
 
       <section className="guardian-section settings-section"><h3><span className="material-symbols-outlined">tune</span>Monitoring Safeguards</h3>
