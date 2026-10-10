@@ -89,6 +89,13 @@ export default function Login({ onNavigate, onSignIn }) {
   const emailError   = state.touched.email    ? validateEmail(state.email)       : null;
   const passwordError = mode !== "reset" && state.touched.password ? validatePassword(state.password) : null;
 
+  function switchAuthMode() {
+    setMode(mode === "login" ? "signup" : "login");
+    setNotice("");
+    dispatch({ type: "SUBMIT_SUCCESS" });
+    dispatch({ type: "SET_FIELD", field: "error", value: null });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     dispatch({ type: "TOUCH", field: "email" });
@@ -250,7 +257,7 @@ export default function Login({ onNavigate, onSignIn }) {
 
           <p className="lp-signup-link">
             {mode === "reset" ? "Remembered your password? " : mode === "signup" ? "Already have an account? " : "New here? "}
-            <button type="button" className="lp-link" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setNotice(""); }}>
+            <button type="button" className="lp-link" onClick={switchAuthMode}>
               {mode === "login" ? "Create an account" : "Sign in"}
             </button>
           </p>
