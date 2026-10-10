@@ -377,45 +377,6 @@ export default function App() {
             </div>
           </div>
 
-          {!plannerRoute && <div className="segment-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-xl">alt_route</span>
-                <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Segment Inspection Preview</h3>
-              </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant">{selectedRoute.segments.length} Stages</span>
-            </div>
-
-            <div className="relative flex flex-col gap-space-md">
-              {selectedRoute.segments.map((seg, idx) => (
-                <div key={seg.id} className="flex gap-space-sm items-start relative">
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-label-sm text-label-sm font-bold z-10 shadow-sm">
-                      {idx + 1}
-                    </div>
-                    {idx < selectedRoute.segments.length - 1 && (
-                      <div className="w-0.5 h-16 bg-surface-variant my-1"></div>
-                    )}
-                  </div>
-                  <div className="flex flex-col bg-surface-container-high rounded-xl p-space-sm flex-1 cursor-pointer hover:bg-surface-container-highest transition-colors">
-                    <div className="flex items-center justify-between">
-                      <span className="font-label-md text-label-md font-bold text-on-surface">{seg.name}</span>
-                      <span className="font-label-sm text-label-sm text-primary font-bold">{seg.distance}</span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">{seg.description}</p>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      {seg.tags.map((tag, tIdx) => (
-                        <span key={tIdx} className={`px-2 py-0.5 rounded-full font-label-sm text-label-sm ${tag.type === 'primary' ? 'bg-primary/10 text-primary' : tag.type === 'secondary' ? 'bg-secondary/10 text-secondary' : 'bg-error/10 text-error'}`}>
-                          {tag.text}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>}
-
           {!plannerRoute && selectedRoute.review && (
             <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
