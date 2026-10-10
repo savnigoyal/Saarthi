@@ -231,7 +231,6 @@ export default function App() {
 
         <div className="campus-demo-actions">
           <button type="button" onClick={() => setCurrentTab('havens')}><span className="material-symbols-outlined">storefront</span>View Safe Havens</button>
-          <button type="button" onClick={() => { setShowGuardians(true); setCurrentTab('guardian'); }}><span className="material-symbols-outlined">shield</span>Guardian Check-in</button>
         </div>
       </div>
     );
