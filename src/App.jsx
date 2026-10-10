@@ -3,6 +3,7 @@ import { getAlternativeRoutes } from './mockService';
 import GuardianCircle from './GuardianCircle';
 import RouteMap from './RouteMap';
 import SafeHavens from './SafeHavens';
+import Login from './Login';
 
 const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -87,7 +88,7 @@ export default function App() {
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showGuardians, setShowGuardians] = useState(false);
-  const [currentTab, setCurrentTab] = useState('havens');
+  const [currentTab, setCurrentTab] = useState('login');
 
   useEffect(() => {
     getAlternativeRoutes().then(data => {
@@ -105,6 +106,15 @@ export default function App() {
           <span className="font-label-lg font-bold">Loading Safety Engine Data...</span>
         </div>
       </div>
+    );
+  }
+
+  if (currentTab === 'login') {
+    return (
+      <Login
+        onNavigate={(tab) => setCurrentTab(tab === 'signup' ? 'login' : tab)}
+        onSignIn={() => setCurrentTab('havens')}
+      />
     );
   }
 
