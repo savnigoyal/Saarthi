@@ -89,6 +89,7 @@ const FactorCard = ({ icon, title, score, colorClass, evidence }) => {
 export default function App() {
   const [routes, setRoutes] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [plannerRoute, setPlannerRoute] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(false);
   const [currentTab, setCurrentTab] = useState('login');
@@ -162,6 +163,8 @@ export default function App() {
   }
 
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
+  const displayedScore = plannerRoute?.score ?? selectedRoute?.weightedScore ?? 0;
+  const demoFactorEvidence = (name) => `${name} estimate for ${plannerRoute?.name || 'this route'}. Illustrative demo value; not verified.`;
 
   if (selectedRoute && showVirtualGuardian) {
     return (
@@ -320,33 +323,33 @@ export default function App() {
 
       <main className="app-main flex flex-col relative w-full bg-surface flex-1">
         <div className="app-content flex flex-col w-full pb-40 px-gutter pt-space-md gap-space-lg max-w-5xl mx-auto">
-          <SafeRouteMap />
+          <SafeRouteMap onRouteSelected={setPlannerRoute} />
 
           <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
 
-            <ScoreRing score={selectedRoute.weightedScore} targetScore={selectedRoute.weightedScore} />
+            <ScoreRing score={displayedScore} targetScore={displayedScore} />
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 text-primary mt-space-xs">
               <span className="material-symbols-outlined text-sm">science</span>
               <span className="font-label-sm text-label-sm font-bold">
-                {selectedRoute.weightedScore >= 90 ? 'Highest sample score' : selectedRoute.weightedScore >= 70 ? 'Mid range sample score' : 'Lowest sample score'}
+                {plannerRoute ? `Sample estimate · ${plannerRoute.name}` : selectedRoute.weightedScore >= 90 ? 'Highest sample score' : selectedRoute.weightedScore >= 70 ? 'Mid range sample score' : 'Lowest sample score'}
               </span>
             </div>
 
-            <p className="score-summary">Illustrative demo score from sample route factors. This is not a live or verified safety assessment.</p>
+            <p className="score-summary">{plannerRoute ? `Breakdown for ${plannerRoute.name}. Scores are illustrative demo estimates, not a live or verified safety assessment.` : 'Illustrative demo score from sample route factors. This is not a live or verified safety assessment.'}</p>
 
             <div className="score-duplicate-meta flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
               <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-base text-primary">route</span> {selectedRoute.distance}
+                <span className="material-symbols-outlined text-base text-primary">route</span> {plannerRoute ? `${(plannerRoute.distance / 1000).toFixed(1)} km` : selectedRoute.distance}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-base text-primary">schedule</span> {selectedRoute.travelTime}
+                <span className="material-symbols-outlined text-base text-primary">schedule</span> {plannerRoute ? `${Math.max(1, Math.round(plannerRoute.duration / 60))} min walk` : selectedRoute.travelTime}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-base text-primary">science</span> {selectedRoute.dataConfidence} Data
+                <span className="material-symbols-outlined text-base text-primary">science</span> {plannerRoute ? 'Sample data' : `${selectedRoute.dataConfidence} Data`}
               </span>
             </div>
           </div>
@@ -366,15 +369,15 @@ export default function App() {
               <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">5 factors</span>
             </div>
             <div className="flex flex-col gap-space-sm">
-              <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={selectedRoute.parameters.lighting.score} colorClass="text-primary" evidence={selectedRoute.parameters.lighting.evidence} />
-              <FactorCard icon="groups" title="Pedestrian Footfall" score={selectedRoute.parameters.pedestrian.score} colorClass="text-secondary" evidence={selectedRoute.parameters.pedestrian.evidence} />
-              <FactorCard icon="videocam" title="Police & CCTV Proximity" score={selectedRoute.parameters.police.score} colorClass="text-primary" evidence={selectedRoute.parameters.police.evidence} />
-              <FactorCard icon="storefront" title="Safe Havens" score={selectedRoute.parameters.safeHavens.score} colorClass="text-primary" evidence={selectedRoute.parameters.safeHavens.evidence} />
-              <FactorCard icon="verified" title="Historical Incident Index" score={selectedRoute.parameters.historical.score} colorClass="text-primary" evidence={selectedRoute.parameters.historical.evidence} />
+              <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={plannerRoute?.factorScores?.lighting ?? selectedRoute.parameters.lighting.score} colorClass="text-primary" evidence={plannerRoute ? demoFactorEvidence('Lighting') : selectedRoute.parameters.lighting.evidence} />
+              <FactorCard icon="groups" title="Pedestrian Footfall" score={plannerRoute?.factorScores?.pedestrian ?? selectedRoute.parameters.pedestrian.score} colorClass="text-secondary" evidence={plannerRoute ? demoFactorEvidence('Pedestrian activity') : selectedRoute.parameters.pedestrian.evidence} />
+              <FactorCard icon="videocam" title="Police & CCTV Proximity" score={plannerRoute?.factorScores?.police ?? selectedRoute.parameters.police.score} colorClass="text-primary" evidence={plannerRoute ? demoFactorEvidence('Police and CCTV proximity') : selectedRoute.parameters.police.evidence} />
+              <FactorCard icon="storefront" title="Safe Havens" score={plannerRoute?.factorScores?.safeHavens ?? selectedRoute.parameters.safeHavens.score} colorClass="text-primary" evidence={plannerRoute ? demoFactorEvidence('Safe havens') : selectedRoute.parameters.safeHavens.evidence} />
+              <FactorCard icon="verified" title="Historical Incident Index" score={plannerRoute?.factorScores?.historical ?? selectedRoute.parameters.historical.score} colorClass="text-primary" evidence={plannerRoute ? demoFactorEvidence('Historical incident index') : selectedRoute.parameters.historical.evidence} />
             </div>
           </div>
 
-          <div className="segment-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
+          {!plannerRoute && <div className="segment-section flex flex-col bg-surface-container rounded-xl p-space-md shadow-md gap-space-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">alt_route</span>
@@ -411,9 +414,9 @@ export default function App() {
                 </div>
               ))}
             </div>
-          </div>
+          </div>}
 
-          {selectedRoute.review && (
+          {!plannerRoute && selectedRoute.review && (
             <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
               <div className="flex flex-col min-w-0">

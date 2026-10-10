@@ -18,6 +18,11 @@ const DEMO_DESTINATIONS = [
 
 const ROUTE_COLORS = ['#57f1db', '#a78bfa', '#ffb86b'];
 const DEMO_SCORES = [82, 76, 69];
+const FACTOR_SCORE_PROFILES = [
+  { lighting: 80, pedestrian: 80, police: 80, safeHavens: 80, historical: 88 },
+  { lighting: 74, pedestrian: 75, police: 70, safeHavens: 75, historical: 82 },
+  { lighting: 66, pedestrian: 68, police: 65, safeHavens: 70, historical: 75 },
+];
 const FOOT_ROUTER = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
 
 function formatDistance(meters) {
@@ -64,6 +69,7 @@ function buildIllustrativeRoutes(destination) {
       duration: distance / 75 * 60,
       geometry: { type: 'LineString', coordinates },
       score: DEMO_SCORES[index],
+      factorScores: FACTOR_SCORE_PROFILES[index],
       illustrative: true,
     };
   });
@@ -80,7 +86,7 @@ function buildOsmUrl(route) {
   return `https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=${encodeURIComponent(routeParam)}`;
 }
 
-export default function SafeRouteMap() {
+export default function SafeRouteMap({ onRouteSelected }) {
   const [destination, setDestination] = useState(null);
   const [destinationQuery, setDestinationQuery] = useState('');
   const [routes, setRoutes] = useState([]);
@@ -170,6 +176,7 @@ export default function SafeRouteMap() {
         duration: route.duration,
         geometry: route.geometry,
         score: DEMO_SCORES[index],
+        factorScores: FACTOR_SCORE_PROFILES[index],
         illustrative: false,
         destination: nextDestination,
       }));
@@ -178,6 +185,7 @@ export default function SafeRouteMap() {
         id: `sample-${liveRoutes.length + index + 1}`,
         name: `Illustrative alternate ${liveRoutes.length + index + 1}`,
         score: DEMO_SCORES[liveRoutes.length + index] ?? 64,
+        factorScores: FACTOR_SCORE_PROFILES[liveRoutes.length + index] ?? FACTOR_SCORE_PROFILES[2],
         destination: nextDestination,
       }));
       const combined = [...liveRoutes, ...alternates].slice(0, 3);
@@ -244,6 +252,11 @@ export default function SafeRouteMap() {
   }
 
   const selectedRoute = routes.find((route) => route.id === selectedRouteId);
+
+  useEffect(() => {
+    if (selectedRoute) onRouteSelected?.(selectedRoute);
+    else if (routes.length === 0) onRouteSelected?.(null);
+  }, [selectedRoute, onRouteSelected]);
 
   return (
     <section className="safe-map-card route-planner" aria-labelledby="safe-map-title">
