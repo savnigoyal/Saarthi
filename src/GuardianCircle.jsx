@@ -172,7 +172,7 @@ export default function GuardianCircle({ route, onBack, onVirtualGuardian }) {
       </section>
 
       <section className="guardian-section"><div className="guardian-section-title"><h3>Virtual Guardian</h3><small>Simulated voice check-in</small></div>
-        <button className="add-guardian" onClick={onVirtualGuardian}><span className="material-symbols-outlined">call</span>Start a Simulated Safety Call</button>
+        <button className="add-guardian add-guardian-safety-call" onClick={onVirtualGuardian}><span className="material-symbols-outlined">call</span>Start a Simulated Safety Call</button>
       </section>
 
       <section className="guardian-section settings-section"><h3><span className="material-symbols-outlined">tune</span>Monitoring Safeguards</h3>

@@ -35,7 +35,8 @@
 .guardian-details .offline-dot { background: #75828f; }
 .guardian-card input { appearance: none; width: 20px; height: 20px; margin: 0; border: 1px solid #b8c1c4; border-radius: 2px; background: #fff; cursor: pointer; }
 .guardian-card input:checked { border-color: #35d3bc; background-color: #35d3bc; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m4 10 4 4 8-9' fill='none' stroke='%230b1326' stroke-width='2.5'/%3E%3C/svg%3E"); }
-.add-guardian { height: 44px; width: 100%; margin-top: 9px; border: 0; border-radius: 12px; background: #dc2626; color: #fff; font-weight: 800; font-size: 12px; }
+.add-guardian { height: 44px; width: 100%; margin-top: 9px; border: 0; border-radius: 12px; background: #171f33; color: #57f1db; font-weight: 800; font-size: 12px; }
+.add-guardian-safety-call { background: #dc2626; color: #fff; }
 .add-guardian .material-symbols-outlined { margin-right: 7px; vertical-align: middle; font-size: 16px; }
 .settings-section { margin-top: 20px; }
 .settings-section > h3 { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; }
