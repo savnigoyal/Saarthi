@@ -232,73 +232,150 @@ export function getFallbackDemoHavens() {
   return [
     {
       id: "demo-police-1",
-      name: "Metro Police Outpost (Demo)",
+      name: "Demo Police Help Point — MI Road",
       type: "police",
       latitude: 26.9135,
       longitude: 75.7892,
       distance: null,
-      open24h: true,
-      phone: "+91-141-2371212",
+      open24h: null,
+      phone: "",
       safetyScore: null,
       features: [
-        "Armed Guards on duty",
-        "360° Perimeter CCTV",
-        "SOS Intercom Outside"
+        "Sample listing — not a verified location"
       ],
-      address: "Sector 4 Transit Plaza, MI Road",
+      address: "Sample location near MI Road, Jaipur",
       isDemoData: true
     },
     {
       id: "demo-pharmacy-1",
-      name: "Apollo 24x7 Pharmacy (Demo)",
+      name: "Demo Pharmacy — Panch Batti",
       type: "pharmacy",
       latitude: 26.9132,
       longitude: 75.7891,
       distance: null,
-      open24h: true,
-      phone: "+91-141-2365444",
+      open24h: null,
+      phone: "",
       safetyScore: null,
       features: [
-        "High-Lux Facade Lighting",
-        "Trained Staff Responder",
-        "Free Emergency Wi-Fi"
+        "Sample listing — hours and services not verified"
       ],
-      address: "Main Ring Road, Panch Batti",
+      address: "Sample location near Panch Batti, Jaipur",
       isDemoData: true
     },
     {
       id: "demo-transit-1",
-      name: "City Central Metro (Gate 2) (Demo)",
+      name: "Demo Transit Hub — Central Jaipur",
       type: "transit",
       latitude: 26.9160,
       longitude: 75.7860,
       distance: null,
-      open24h: false,
-      phone: "+91-141-2822171",
+      open24h: null,
+      phone: "",
       safetyScore: null,
       features: [
-        "Lit Concourse & Escalators",
-        "Women Helpline Kiosk",
-        "Safe Taxi Stand Outside"
+        "Sample listing — facilities not verified"
       ],
-      address: "Concourse Concourse A",
+      address: "Sample location near central Jaipur",
       isDemoData: true
     },
     {
       id: "demo-hospital-1",
-      name: "Green Cross Emergency Bay (Demo)",
+      name: "Demo Hospital — C-Scheme",
       type: "hospital",
       latitude: 26.9050,
       longitude: 75.7920,
       distance: null,
-      open24h: true,
-      phone: "+91-141-2378900",
+      open24h: null,
+      phone: "",
       safetyScore: null,
       features: [
-        "24hr Triage & Waiting Lounge",
-        "Paramilitary Guard Staff"
+        "Sample listing — emergency services not verified"
       ],
-      address: "Emergency Gate 3, C-Scheme",
+      address: "Sample location near C-Scheme, Jaipur",
+      isDemoData: true
+    },
+    {
+      id: "demo-police-2",
+      name: "Demo Police Help Point — Bani Park",
+      type: "police",
+      latitude: 26.9108,
+      longitude: 75.7848,
+      distance: null,
+      open24h: null,
+      phone: "",
+      safetyScore: null,
+      features: ["Sample listing — not a verified location"],
+      address: "Sample location near Bani Park, Jaipur",
+      isDemoData: true
+    },
+    {
+      id: "demo-pharmacy-2",
+      name: "Demo Pharmacy — MI Road East",
+      type: "pharmacy",
+      latitude: 26.9150,
+      longitude: 75.7885,
+      distance: null,
+      open24h: null,
+      phone: "",
+      safetyScore: null,
+      features: ["Sample listing — hours and services not verified"],
+      address: "Sample location near MI Road, Jaipur",
+      isDemoData: true
+    },
+    {
+      id: "demo-transit-2",
+      name: "Demo Bus Stop — Ajmeri Gate",
+      type: "transit",
+      latitude: 26.9115,
+      longitude: 75.7837,
+      distance: null,
+      open24h: null,
+      phone: "",
+      safetyScore: null,
+      features: ["Sample listing — facilities not verified"],
+      address: "Sample location near Ajmeri Gate, Jaipur",
+      isDemoData: true
+    },
+    {
+      id: "demo-hospital-2",
+      name: "Demo Medical Center — Civil Lines",
+      type: "hospital",
+      latitude: 26.9091,
+      longitude: 75.7866,
+      distance: null,
+      open24h: null,
+      phone: "",
+      safetyScore: null,
+      features: ["Sample listing — emergency services not verified"],
+      address: "Sample location near Civil Lines, Jaipur",
+      isDemoData: true
+    },
+    {
+      id: "demo-pharmacy-3",
+      name: "Demo Pharmacy — Station Road",
+      type: "pharmacy",
+      latitude: 26.9137,
+      longitude: 75.7837,
+      distance: null,
+      open24h: null,
+      phone: "",
+      safetyScore: null,
+      features: ["Sample listing — hours and services not verified"],
+      address: "Sample location near Station Road, Jaipur",
+      isDemoData: true
+    },
+    {
+      id: "demo-transit-3",
+      name: "Demo Transit Stop — Sindhi Camp",
+      type: "transit",
+      latitude: 26.9155,
+      longitude: 75.7848,
+      distance: null,
+      open24h: null,
+      phone: "",
+      safetyScore: null,
+      features: ["Sample listing — facilities not verified"],
+      address: "Sample location near Sindhi Camp, Jaipur",
       isDemoData: true
     }
   ];

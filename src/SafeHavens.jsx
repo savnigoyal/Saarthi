@@ -8,6 +8,7 @@ import {
   DEMO_LOCATION,
   HAVEN_CATEGORIES,
   loadSafeHavenData,
+  getFallbackDemoHavens,
   getUserLocation,
   calculateDistance,
   formatDistance,
@@ -62,7 +63,7 @@ function getHavenIcon(haven) {
     : 'Transit';
 
   const distText = haven.distance != null ? formatDistance(haven.distance) : '';
-  const displayText = distText ? `${typeLabel} ${distText}` : typeLabel;
+  const displayText = `${haven.isDemoData ? 'DEMO ' : ''}${distText ? `${typeLabel} ${distText}` : typeLabel}`;
 
   return L.divIcon({
     className: 'haven-marker-wrap',
@@ -72,14 +73,17 @@ function getHavenIcon(haven) {
         <span>${displayText}</span>
       </div>
     `,
-    iconSize: [95, 26],
-    iconAnchor: [48, 13]
+    iconSize: [120, 26],
+    iconAnchor: [60, 13]
   });
 }
 
 export default function SafeHavens({ onNavigate }) {
   // 1. Data states
   const [allHavens, setAllHavens] = useState([]);
+  const [mappedHavens, setMappedHavens] = useState([]);
+  const [showingDemoPlaces, setShowingDemoPlaces] = useState(false);
+  const onlyDemoPlaceData = mappedHavens.length > 0 && mappedHavens.every((haven) => haven.isDemoData);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
 
@@ -147,6 +151,8 @@ export default function SafeHavens({ onNavigate }) {
         const loadedData = await loadSafeHavenData();
         if (mounted) {
           setAllHavens(loadedData);
+          setMappedHavens(loadedData);
+          setShowingDemoPlaces(loadedData.length > 0 && loadedData.every((haven) => haven.isDemoData));
         }
       } catch (err) {
         if (mounted) {
@@ -265,6 +271,8 @@ export default function SafeHavens({ onNavigate }) {
         longitude: pos.longitude,
         isDemo: false
       });
+      setAllHavens(mappedHavens);
+      setShowingDemoPlaces(mappedHavens.length > 0 && mappedHavens.every((haven) => haven.isDemoData));
       setMapCenter([pos.latitude, pos.longitude]);
       setLocationError(null);
     } catch (err) {
@@ -275,6 +283,9 @@ export default function SafeHavens({ onNavigate }) {
   };
 
   const handleSetDemoLocation = () => {
+    const demoHavens = getFallbackDemoHavens();
+    setAllHavens(demoHavens);
+    setShowingDemoPlaces(true);
     setUserLocation({
       latitude: DEMO_LOCATION.latitude,
       longitude: DEMO_LOCATION.longitude,
@@ -282,6 +293,16 @@ export default function SafeHavens({ onNavigate }) {
     });
     setMapCenter([DEMO_LOCATION.latitude, DEMO_LOCATION.longitude]);
     setLocationError(null);
+    setSearchQuery('');
+    setSelectedCategory('all');
+    setNearbyOnly(false);
+    setSavedOnly(false);
+    setSortBy('distance');
+  };
+
+  const handleShowMappedPlaces = () => {
+    setAllHavens(mappedHavens);
+    setShowingDemoPlaces(mappedHavens.length > 0 && mappedHavens.every((haven) => haven.isDemoData));
   };
 
   const handleVoiceSearch = () => {
@@ -457,6 +478,37 @@ export default function SafeHavens({ onNavigate }) {
           </div>
         )}
 
+        {!locationError && (
+          <div className={`haven-gps-banner ${showingDemoPlaces ? 'is-demo' : ''}`}>
+            <p className="haven-gps-text">
+              <span className="material-symbols-outlined text-sm">{showingDemoPlaces ? 'science' : 'info'}</span>
+              {showingDemoPlaces && !userLocation.isDemo
+                ? 'Sample listings are around Jaipur, not your current location. Choose the demo location to see nearby sample distances.'
+                : showingDemoPlaces
+                  ? 'Sample Jaipur listings are for preview only; place details and services are not verified.'
+                : userLocation.isDemo
+                  ? 'Showing public map listings around the Jaipur demo location.'
+                  : 'Showing public map listings near your location. Availability may not be current.'}
+            </p>
+            <div className="haven-demo-actions">
+              {!userLocation.isDemo && <button className="haven-gps-demo-btn" onClick={handleUseRealGPS} disabled={requestingGPS}>{requestingGPS ? 'Requesting…' : 'Refresh GPS'}</button>}
+              <button
+                className="haven-gps-demo-btn"
+                onClick={showingDemoPlaces && !onlyDemoPlaceData ? handleShowMappedPlaces : handleSetDemoLocation}
+                disabled={loading || (showingDemoPlaces && onlyDemoPlaceData && userLocation.isDemo)}
+              >
+                {showingDemoPlaces && !onlyDemoPlaceData
+                  ? 'Show mapped places'
+                  : showingDemoPlaces && userLocation.isDemo
+                    ? 'Jaipur demo active'
+                    : showingDemoPlaces
+                      ? 'Use Jaipur demo location'
+                      : 'Use Jaipur demo places'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Map Section */}
         <div className="haven-map-card">
           {/* Top floating pill */}
@@ -521,6 +573,7 @@ export default function SafeHavens({ onNavigate }) {
                 <Popup>
                   <div style={{ color: '#0b1326', minWidth: '150px' }}>
                     <strong style={{ fontSize: '12px' }}>{haven.name}</strong>
+                    {haven.isDemoData && <div style={{ fontSize: '10px', color: '#9a5b00', fontWeight: 700, marginTop: '3px' }}>DEMO LISTING · NOT VERIFIED</div>}
                     <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '2px' }}>
                       {haven.distance != null ? formatDistance(haven.distance) : ''}
                       {haven.open24h === true ? ' • Open 24/7' : ''}
@@ -631,6 +684,7 @@ export default function SafeHavens({ onNavigate }) {
                     <div className="haven-card-info">
                       <div className="haven-card-meta-row">
                         <div className="haven-meta-tags">
+                          {haven.isDemoData && <span className="haven-demo-tag">DEMO</span>}
                           <span className="haven-meta-tag">{categoryMeta.tag}</span>
                           <span>•</span>
                           <span className={`haven-status-tag ${haven.open24h === true ? 'open' : 'unverified'}`}>

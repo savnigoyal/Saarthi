@@ -1098,6 +1098,10 @@
 .haven-gps-demo-btn:hover {
   background: rgba(234, 179, 8, 0.35);
 }
+.haven-gps-banner.is-demo { background: rgba(87, 241, 219, 0.08); border-color: rgba(87, 241, 219, 0.3); }
+.haven-gps-banner.is-demo .haven-gps-text { color: #8df7e8; }
+.haven-demo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.haven-demo-tag { display: inline-flex; align-items: center; border: 1px solid #f0bd6070; border-radius: 999px; padding: 2px 7px; color: #f5d28a; background: #f0bd6015; font-size: 9px; font-weight: 900; letter-spacing: 0.04em; }
 
 /* Empty state */
 .haven-empty-state {
