@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { authPersistenceReady, firebaseAuth } from './firebase';
 import { getAlternativeRoutes } from './mockService';
 import SafeGuardianCircle from './SafeGuardianCircle';
 import GuardianCircle from './GuardianCircle';
@@ -88,6 +90,7 @@ export default function App() {
   const [routes, setRoutes] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
   const [currentTab, setCurrentTab] = useState('login');
   const [currentView, setCurrentView] = useState('detail');
   const [showGuardians, setShowGuardians] = useState(false);
@@ -101,7 +104,25 @@ export default function App() {
     });
   }, []);
 
-  if (loading) {
+  useEffect(() => {
+    let cancelled = false;
+    let unsubscribe;
+
+    authPersistenceReady.catch(() => undefined).then(() => {
+      if (cancelled) return;
+      unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+        setCurrentTab((tab) => user ? (tab === 'login' ? 'havens' : tab) : 'login');
+        setAuthReady(true);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, []);
+
+  if (loading || !authReady) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center text-on-surface">
         <div className="flex flex-col items-center gap-4">

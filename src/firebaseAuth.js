@@ -2,13 +2,17 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { firebaseAuth } from './firebase';
+import { authPersistenceReady, firebaseAuth } from './firebase';
 
-export const createAccount = (email, password) =>
-  createUserWithEmailAndPassword(firebaseAuth, email, password);
+export const createAccount = async (email, password) => {
+  await authPersistenceReady;
+  return createUserWithEmailAndPassword(firebaseAuth, email, password);
+};
 
-export const signIn = (email, password) =>
-  signInWithEmailAndPassword(firebaseAuth, email, password);
+export const signIn = async (email, password) => {
+  await authPersistenceReady;
+  return signInWithEmailAndPassword(firebaseAuth, email, password);
+};
 
 export function getFirebaseAuthErrorMessage(error) {
   switch (error?.code) {

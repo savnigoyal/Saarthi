@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getAuth } from 'firebase/auth';
+import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
 
 const config = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,6 +20,7 @@ if (missingConfig.length) {
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(config);
 export const firebaseAuth = getAuth(firebaseApp);
+export const authPersistenceReady = setPersistence(firebaseAuth, browserLocalPersistence);
 
 export const firebaseAnalytics = typeof window !== 'undefined'
   ? isSupported().then((supported) => (supported ? getAnalytics(firebaseApp) : null)).catch(() => null)
