@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
+import SafeGuardianCircle from './SafeGuardianCircle';
 import GuardianCircle from './GuardianCircle';
 import SafeRouteMap from './SafeRouteMap';
 import SafeHavens from './SafeHavens';
@@ -10,9 +11,8 @@ const ScoreRing = ({ score, targetScore }) => {
   const [currentScore, setCurrentScore] = useState(0);
 
   useEffect(() => {
-    // Reset and animate when target changes
     setCurrentScore(0);
-    const timeout = setTimeout(() => setCurrentScore(targetScore), 150);
+    const timeout = setTimeout(() => setCurrentScore(targetScore ?? 0), 150);
     return () => clearTimeout(timeout);
   }, [targetScore]);
 
@@ -23,13 +23,13 @@ const ScoreRing = ({ score, targetScore }) => {
     <div className="relative w-48 h-48 my-space-xs flex items-center justify-center mx-auto score-ring">
       <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
         <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="68" stroke="currentColor" strokeWidth="12" />
-        <circle 
-          className="transition-all duration-1000 ease-out" 
-          cx="80" cy="80" fill="transparent" r="68" 
-          stroke="url(#teal-glow-grad)" 
-          strokeDasharray="427.26" 
-          strokeDashoffset={offset} 
-          strokeLinecap="round" strokeWidth="12" 
+        <circle
+          className="transition-all duration-1000 ease-out"
+          cx="80" cy="80" fill="transparent" r="68"
+          stroke="url(#teal-glow-grad)"
+          strokeDasharray="427.26"
+          strokeDashoffset={offset}
+          strokeLinecap="round" strokeWidth="12"
         />
         <defs>
           <linearGradient id="teal-glow-grad" x1="0%" x2="100%" y1="0%" y2="100%">
@@ -40,7 +40,7 @@ const ScoreRing = ({ score, targetScore }) => {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
         <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-primary mb-1">
-          <span className="material-symbols-outlined text-2xl" style={{fontVariationSettings: "'FILL' 1"}}>shield</span>
+          <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
         </div>
         <div className="flex items-baseline">
           <span className="font-headline-xl text-headline-xl font-bold text-on-surface leading-none tracking-tight">
@@ -56,9 +56,9 @@ const ScoreRing = ({ score, targetScore }) => {
 
 const FactorCard = ({ icon, title, score, colorClass, evidence }) => {
   const [expanded, setExpanded] = useState(false);
-  
+
   return (
-    <div 
+    <div
       className="flex flex-col bg-surface-container-high rounded-lg p-space-sm gap-1.5 cursor-pointer hover:bg-surface-container-highest transition-colors"
       onClick={() => setExpanded(!expanded)}
     >
@@ -88,8 +88,9 @@ export default function App() {
   const [routes, setRoutes] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showGuardians, setShowGuardians] = useState(false);
   const [currentTab, setCurrentTab] = useState('login');
+  const [currentView, setCurrentView] = useState('detail');
+  const [showGuardians, setShowGuardians] = useState(false);
   const [showVirtualGuardian, setShowVirtualGuardian] = useState(false);
 
   useEffect(() => {
@@ -141,11 +142,28 @@ export default function App() {
   const selectedRoute = routes.find(r => r.id === selectedRouteId);
 
   if (selectedRoute && showVirtualGuardian) {
-    return <VirtualGuardian onBack={() => setShowVirtualGuardian(false)} onSafety={() => setShowVirtualGuardian(false)} />;
+    return (
+      <VirtualGuardian
+        onBack={() => setShowVirtualGuardian(false)}
+        onSafety={() => {
+          setShowVirtualGuardian(false);
+          setCurrentTab('guardian');
+        }}
+      />
+    );
   }
 
   if ((selectedRoute && showGuardians) || (selectedRoute && currentTab === 'guardian')) {
-    return <GuardianCircle route={selectedRoute} onBack={() => { setShowGuardians(false); setCurrentTab('havens'); }} onVirtualGuardian={() => setShowVirtualGuardian(true)} />;
+    return (
+      <GuardianCircle
+        route={selectedRoute}
+        onBack={() => {
+          setShowGuardians(false);
+          setCurrentTab('havens');
+        }}
+        onVirtualGuardian={() => setShowVirtualGuardian(true)}
+      />
+    );
   }
 
   if (selectedRoute?.isCampusDemo) {
@@ -191,7 +209,7 @@ export default function App() {
       </div>
     );
   }
-  
+
   if (!selectedRoute) {
     return (
       <div className="flex flex-col min-h-screen bg-surface">
@@ -214,12 +232,48 @@ export default function App() {
     );
   }
 
-  const p = selectedRoute.parameters;
+  if (currentView === 'circle') {
+    return (
+      <div>
+        <div className="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur border-b border-surface-container-highest px-gutter py-2 flex items-center justify-between text-xs max-w-lg mx-auto">
+          <button
+            onClick={() => setCurrentView('detail')}
+            className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-bold"
+          >
+            <span className="material-symbols-outlined text-sm">shield</span>
+            <span>Haven Detail</span>
+          </button>
+          <span className="text-primary font-bold flex items-center gap-1">
+            <span className="material-symbols-outlined text-sm">shield_person</span>
+            <span>Safe Guardian Circle</span>
+          </span>
+        </div>
+
+        <SafeGuardianCircle
+          selectedRoute={selectedRoute}
+          onNavigateBack={() => setCurrentView('detail')}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="app-shell flex flex-col min-h-screen bg-surface selection:bg-primary-container selection:text-on-primary-container">
-      
-      <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
+      <div className="sticky top-0 z-[60] bg-surface-container-lowest/90 backdrop-blur border-b border-surface-container-highest px-gutter py-2 flex items-center justify-between text-xs max-w-lg mx-auto">
+        <span className="text-primary font-bold flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm">shield</span>
+          <span>Haven Detail</span>
+        </span>
+        <button
+          onClick={() => setCurrentView('circle')}
+          className="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-bold"
+        >
+          <span className="material-symbols-outlined text-sm">shield_person</span>
+          <span>Safe Guardian Circle</span>
+        </button>
+      </div>
+
+      <header className="sticky top-[33px] inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
         <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
           <div className="flex items-center gap-space-xs min-w-0">
             <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
@@ -232,14 +286,14 @@ export default function App() {
               <span className="material-symbols-outlined text-xs">bolt</span>
               <span className="font-label-sm text-label-sm font-bold">Live Safe</span>
             </div>
-            <img alt="Profile" className="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE"/>
+            <img alt="Profile" className="w-8 h-8 rounded-full object-cover ring-1 ring-primary/40 shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE" />
           </div>
         </div>
-        {/* Route Selector */}
+
         <div className="px-gutter pb-3 flex gap-2 overflow-x-auto">
           {routes.map(r => (
-            <button 
-              key={r.id} 
+            <button
+              key={r.id}
               onClick={() => setSelectedRouteId(r.id)}
               className={`px-4 py-2 rounded-full whitespace-nowrap font-label-sm font-bold transition-colors ${selectedRouteId === r.id ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
             >
@@ -265,20 +319,20 @@ export default function App() {
 
           <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>
-            
+
             <ScoreRing score={selectedRoute.weightedScore} targetScore={selectedRoute.weightedScore} />
-            
+
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 text-primary mt-space-xs">
-              <span className="material-symbols-outlined text-sm" style={{fontVariationSettings: "'FILL' 1"}}>check_circle</span>
+              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
               <span className="font-label-sm text-label-sm font-bold">
-                {selectedRoute.weightedScore >= 90 ? 'Exceptionally Safe Night Corridor' : 
-                 selectedRoute.weightedScore >= 70 ? 'Moderate Caution Advised' : 
-                 'High Alert Route'}
+                {selectedRoute.weightedScore >= 90 ? 'Exceptionally Safe Night Corridor' :
+                  selectedRoute.weightedScore >= 70 ? 'Moderate Caution Advised' :
+                    'High Alert Route'}
               </span>
             </div>
 
             <p className="score-summary">Safety estimate based on mapped lighting, nearby activity, police proximity, safe havens, and available incident data.</p>
-            
+
             <div className="score-duplicate-meta flex items-center gap-space-sm mt-space-sm text-on-surface-variant font-body-sm text-body-sm">
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-base text-primary">route</span> {selectedRoute.distance}
@@ -306,14 +360,14 @@ export default function App() {
                 <span className="material-symbols-outlined text-primary text-xl">tune</span>
                 <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Safety Factor Breakdown</h3>
               </div>
-          <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">5 factors</span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant font-bold">5 factors</span>
             </div>
             <div className="flex flex-col gap-space-sm">
-              <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={p.lighting.score} colorClass="text-primary" evidence={p.lighting.evidence} />
-              <FactorCard icon="groups" title="Pedestrian Footfall" score={p.pedestrian.score} colorClass="text-secondary" evidence={p.pedestrian.evidence} />
-              <FactorCard icon="videocam" title="Police & CCTV Proximity" score={p.police.score} colorClass="text-primary" evidence={p.police.evidence} />
-              <FactorCard icon="storefront" title="Safe Havens" score={p.safeHavens.score} colorClass="text-primary" evidence={p.safeHavens.evidence} />
-              <FactorCard icon="verified" title="Historical Incident Index" score={p.historical.score} colorClass="text-primary" evidence={p.historical.evidence} />
+              <FactorCard icon="lightbulb" title="Street Lighting & Visibility" score={selectedRoute.parameters.lighting.score} colorClass="text-primary" evidence={selectedRoute.parameters.lighting.evidence} />
+              <FactorCard icon="groups" title="Pedestrian Footfall" score={selectedRoute.parameters.pedestrian.score} colorClass="text-secondary" evidence={selectedRoute.parameters.pedestrian.evidence} />
+              <FactorCard icon="videocam" title="Police & CCTV Proximity" score={selectedRoute.parameters.police.score} colorClass="text-primary" evidence={selectedRoute.parameters.police.evidence} />
+              <FactorCard icon="storefront" title="Safe Havens" score={selectedRoute.parameters.safeHavens.score} colorClass="text-primary" evidence={selectedRoute.parameters.safeHavens.evidence} />
+              <FactorCard icon="verified" title="Historical Incident Index" score={selectedRoute.parameters.historical.score} colorClass="text-primary" evidence={selectedRoute.parameters.historical.evidence} />
             </div>
           </div>
 
@@ -325,7 +379,7 @@ export default function App() {
               </div>
               <span className="font-label-sm text-label-sm text-on-surface-variant">{selectedRoute.segments.length} Stages</span>
             </div>
-            
+
             <div className="relative flex flex-col gap-space-md">
               {selectedRoute.segments.map((seg, idx) => (
                 <div key={seg.id} className="flex gap-space-sm items-start relative">
@@ -355,7 +409,7 @@ export default function App() {
               ))}
             </div>
           </div>
-          
+
           {selectedRoute.review && (
             <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
@@ -369,7 +423,13 @@ export default function App() {
       </main>
 
       <div className="fixed bottom-0 inset-x-0 z-50 p-gutter bg-surface/85 backdrop-blur-xl border-t border-surface-container shadow-2xl flex flex-col gap-2 max-w-lg mx-auto">
-        <button onClick={() => { setShowGuardians(true); setCurrentTab('guardian'); }} className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform">
+        <button
+          onClick={() => {
+            setShowGuardians(true);
+            setCurrentTab('guardian');
+          }}
+          className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
+        >
           <span>Proceed with this safe route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
         </button>

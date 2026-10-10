@@ -1,7 +1,6 @@
 /**
  * ============================================================
  * DEMO DATA — NOT LIVE OR VERIFIED
- * ============================================================
  * Source: Fictional Jaipur route scenarios for development.
  * All scores are internally consistent with the weighted formula.
  * OpenStreetMap-derived values are labelled as map data only.
@@ -31,7 +30,6 @@
  */
 
 export const mockRoutes = [
-
   // ──────────────────────────────────────────────────────────
   // ROUTE A — Well-documented, high-safety corridor
   // Score calculation:
@@ -47,32 +45,35 @@ export const mockRoutes = [
     isDemoData: true,
 
     parameters: {
-
       lighting: {
         score: 92,
-        evidence: "OSM map data shows high density of street_lamp nodes along MI Road corridor. Municipal lighting reported as functional on primary roads. (OpenStreetMap-derived geographic data — not a live sensor reading.)"
+        evidence:
+          "OSM map data shows high density of street_lamp nodes along MI Road corridor. Municipal lighting reported as functional on primary roads. (OpenStreetMap-derived geographic data — not a live sensor reading.)",
       },
 
       pedestrian: {
         score: 78,
-        evidence: "Estimated Pedestrian Activity based on nearby mapped activity points: 12 restaurants, 34 shops, 3 bus stops within 200m. Active commercial zone expected to have moderate foot traffic at night. (Not real-time footfall data.)"
+        evidence:
+          "Estimated Pedestrian Activity based on nearby mapped activity points: 12 restaurants, 34 shops, 3 bus stops within 200m. Active commercial zone expected to have moderate foot traffic at night. (Not real-time footfall data.)",
       },
 
       police: {
         score: 65,
-        evidence: "One OSM-mapped police station within 1.4 km (Ashok Nagar Thana). No verified CCTV coverage data available. Proximity score only — operational status unverified. (OpenStreetMap-derived data.)"
+        evidence:
+          "One OSM-mapped police station within 1.4 km (Ashok Nagar Thana). No verified CCTV coverage data available. Proximity score only — operational status unverified. (OpenStreetMap-derived data.)",
       },
 
       safeHavens: {
         score: 80,
-        evidence: "OSM map data shows: 1 hospital within 900m (Sawai Man Singh Hospital), 4 pharmacies within 600m, 3 bus stops with shelters. (Map data only — opening hours not verified.)"
+        evidence:
+          "OSM map data shows: 1 hospital within 900m (Sawai Man Singh Hospital), 4 pharmacies within 600m, 3 bus stops with shelters. (Map data only — opening hours not verified.)",
       },
 
       historical: {
         score: 88,
-        evidence: "PROVISIONAL — No official crime dataset connected yet. This score (88) is a placeholder pending integration of verified incident data. Do not treat as a safety guarantee. Historical Incident Safety factor (25%) is not active."
-      }
-
+        evidence:
+          "PROVISIONAL — No official crime dataset connected yet. This score (88) is a placeholder pending integration of verified incident data. Do not treat as a safety guarantee. Historical Incident Safety factor (25%) is not active.",
+      },
     },
 
     segments: [
@@ -83,8 +84,8 @@ export const mockRoutes = [
         description: "Broad road, high pedestrian density, multiple shops open late",
         tags: [
           { text: "Well Lit (OSM)", type: "primary" },
-          { text: "Active Zone", type: "secondary" }
-        ]
+          { text: "Active Zone", type: "secondary" },
+        ],
       },
       {
         id: "r1_s2",
@@ -93,8 +94,8 @@ export const mockRoutes = [
         description: "Dense commercial corridor, bus stops at 600m intervals",
         tags: [
           { text: "Bus Stops Nearby", type: "primary" },
-          { text: "High Activity (Est.)", type: "secondary" }
-        ]
+          { text: "High Activity (Est.)", type: "secondary" },
+        ],
       },
       {
         id: "r1_s3",
@@ -103,24 +104,25 @@ export const mockRoutes = [
         description: "Residential stretch, moderate lighting per OSM data",
         tags: [
           { text: "Residential", type: "secondary" },
-          { text: "SMS Hospital 900m", type: "primary" }
-        ]
-      }
+          { text: "SMS Hospital 900m", type: "primary" },
+        ],
+      },
     ],
 
     review: {
       user: "Priya R.",
       timeAgo: "Demo entry",
       text: "MI Road is well-lit and always has people around. Felt safe walking back after 10 PM.",
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDt5dGCz-yhSsIAtL0gMYhkomRvcg1I7kweTTKMM4K24MgomvEp-SAF8rEKBB4WiwbNkGsexPxd4rFeLKMmgUsiwIE6LwfolFgK5RrcorhqyZWB5PBGUcadFjeY141JicN8ERPocs6rt-wgmbAxozjO4pck-o9i_JarA6EOX9kU394Vs9qyugNTDITNFEI8GwbHX-zxRjVf1IjMxCwPRQvW1BCNVTry93UFdA-yHRBhbthYZrL-Zvuc"
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuDt5dGCz-yhSsIAtL0gMYhkomRvcg1I7kweTTKMM4K24MgomvEp-SAF8rEKBB4WiwbNkGsexPxd4rFeLKMmgUsiwIE6LwfolFgK5RrcorhqyZWB5PBGUcadFjeY141JicN8ERPocs6rt-wgmbAxozjO4pck-o9i_JarA6EOX9kU394Vs9qyugNTDITNFEI8GwbHX-zxRjVf1IjMxCwPRQvW1BCNVTry93UFdA-yHRBhbthYZrL-Zvuc",
     },
 
     missingData: [
       "Real-time street light sensor status",
       "Verified CCTV camera locations",
       "Actual pedestrian footfall counts",
-      "Official crime/incident dataset (Historical factor inactive)"
-    ]
+      "Official crime/incident dataset (Historical factor inactive)",
+    ],
   },
 
   // ──────────────────────────────────────────────────────────
@@ -138,32 +140,35 @@ export const mockRoutes = [
     isDemoData: true,
 
     parameters: {
-
       lighting: {
         score: 60,
-        evidence: "OSM street_lamp data is sparse for this area — fewer than 4 nodes mapped on this corridor. Lighting coverage cannot be reliably estimated. Data may be incomplete due to limited OSM contributions in this zone. (OpenStreetMap-derived data — stale or incomplete.)"
+        evidence:
+          "OSM street_lamp data is sparse for this area — fewer than 4 nodes mapped on this corridor. Lighting coverage cannot be reliably estimated. Data may be incomplete due to limited OSM contributions in this zone. (OpenStreetMap-derived data — stale or incomplete.)",
       },
 
       pedestrian: {
         score: 45,
-        evidence: "Estimated Pedestrian Activity based on nearby mapped activity points: 3 restaurants, 8 shops within 200m. Narrow lane with limited commercial presence. Activity expected to drop significantly post-sunset. (Not real-time footfall data.)"
+        evidence:
+          "Estimated Pedestrian Activity based on nearby mapped activity points: 3 restaurants, 8 shops within 200m. Narrow lane with limited commercial presence. Activity expected to drop significantly post-sunset. (Not real-time footfall data.)",
       },
 
       police: {
         score: 35,
-        evidence: "No OSM-mapped police station within 1 km. Nearest is Ramganj Thana at approximately 1.7 km. No CCTV data available. (OpenStreetMap-derived data — operational status unknown.)"
+        evidence:
+          "No OSM-mapped police station within 1 km. Nearest is Ramganj Thana at approximately 1.7 km. No CCTV data available. (OpenStreetMap-derived data — operational status unknown.)",
       },
 
       safeHavens: {
         score: 55,
-        evidence: "OSM map data shows: 1 pharmacy within 500m, 2 bus stops in the broader area. No hospital within 1 km. Limited safe haven infrastructure mapped in this zone. (Map data only.)"
+        evidence:
+          "OSM map data shows: 1 pharmacy within 500m, 2 bus stops in the broader area. No hospital within 1 km. Limited safe haven infrastructure mapped in this zone. (Map data only.)",
       },
 
       historical: {
         score: 75,
-        evidence: "PROVISIONAL — No official crime dataset connected yet. This score (75) is a placeholder. Historical Incident Safety factor (25%) is not active. Do not treat as verified."
-      }
-
+        evidence:
+          "PROVISIONAL — No official crime dataset connected yet. This score (75) is a placeholder. Historical Incident Safety factor (25%) is not active. Do not treat as verified.",
+      },
     },
 
     segments: [
@@ -174,8 +179,8 @@ export const mockRoutes = [
         description: "Busy during day, lighting data incomplete in OSM",
         tags: [
           { text: "Lighting Data Sparse", type: "error" },
-          { text: "Daytime Busy", type: "secondary" }
-        ]
+          { text: "Daytime Busy", type: "secondary" },
+        ],
       },
       {
         id: "r2_s2",
@@ -184,25 +189,24 @@ export const mockRoutes = [
         description: "Narrow lane — no mapped police or safe havens",
         tags: [
           { text: "No Police Nearby", type: "error" },
-          { text: "Caution: Isolated", type: "error" }
-        ]
+          { text: "Caution: Isolated", type: "error" },
+        ],
       },
       {
         id: "r2_s3",
         name: "Exit to Tonk Road",
         distance: "500m",
         description: "Opens to wider road with bus stop",
-        tags: [
-          { text: "Bus Stop", type: "primary" }
-        ]
-      }
+        tags: [{ text: "Bus Stop", type: "primary" }],
+      },
     ],
 
     review: {
       user: "Aryan K.",
       timeAgo: "Demo entry",
       text: "Quickest route but the inner lane gets very dark at night. I'd avoid it after 9 PM.",
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE"
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE",
     },
 
     missingData: [
@@ -210,8 +214,8 @@ export const mockRoutes = [
       "No verified CCTV data",
       "Real-time pedestrian counts unavailable",
       "Official crime/incident dataset (Historical factor inactive)",
-      "Safe haven opening hours unverified"
-    ]
+      "Safe haven opening hours unverified",
+    ],
   },
 
   // ──────────────────────────────────────────────────────────
@@ -229,32 +233,35 @@ export const mockRoutes = [
     isDemoData: true,
 
     parameters: {
-
       lighting: {
         score: 82,
-        evidence: "OSM data shows consistent street_lamp coverage along Vidhan Sabha Marg. State road, likely better maintained than inner lanes. (OpenStreetMap-derived geographic data — not a live sensor reading.)"
+        evidence:
+          "OSM data shows consistent street_lamp coverage along Vidhan Sabha Marg. State road, likely better maintained than inner lanes. (OpenStreetMap-derived geographic data — not a live sensor reading.)",
       },
 
       pedestrian: {
         score: 58,
-        evidence: "Estimated Pedestrian Activity based on nearby mapped activity points: 2 universities, 6 schools, 7 restaurants, 12 shops within 400m corridor. Government/institutional zone — activity concentrated during daytime hours. Lower estimated night activity. (Not real-time footfall data.)"
+        evidence:
+          "Estimated Pedestrian Activity based on nearby mapped activity points: 2 universities, 6 schools, 7 restaurants, 12 shops within 400m corridor. Government/institutional zone — activity concentrated during daytime hours. Lower estimated night activity. (Not real-time footfall data.)",
       },
 
       police: {
         score: 88,
-        evidence: "Two OSM-mapped police stations within 1 km (Vidhan Sabha Chowki and Civil Lines Thana). Higher proximity score. No verified CCTV data available. (OpenStreetMap-derived data — operational status unverified.)"
+        evidence:
+          "Two OSM-mapped police stations within 1 km (Vidhan Sabha Chowki and Civil Lines Thana). Higher proximity score. No verified CCTV data available. (OpenStreetMap-derived data — operational status unverified.)",
       },
 
       safeHavens: {
         score: 25,
-        evidence: "OSM map data shows: 0 hospitals within 1.5 km, 1 pharmacy at 1.2 km, 2 bus stops along route. Low safe haven density — institutional zone with limited 24/7 commercial presence. (Map data only — opening hours not verified.)"
+        evidence:
+          "OSM map data shows: 0 hospitals within 1.5 km, 1 pharmacy at 1.2 km, 2 bus stops along route. Low safe haven density — institutional zone with limited 24/7 commercial presence. (Map data only — opening hours not verified.)",
       },
 
       historical: {
         score: 85,
-        evidence: "PROVISIONAL — No official crime dataset connected yet. This score (85) is a placeholder. Historical Incident Safety factor (25%) is not active. Do not treat as verified."
-      }
-
+        evidence:
+          "PROVISIONAL — No official crime dataset connected yet. This score (85) is a placeholder. Historical Incident Safety factor (25%) is not active. Do not treat as verified.",
+      },
     },
 
     segments: [
@@ -265,8 +272,8 @@ export const mockRoutes = [
         description: "Wide state road, OSM lighting data consistent",
         tags: [
           { text: "State Road", type: "primary" },
-          { text: "Patrolled Area", type: "primary" }
-        ]
+          { text: "Patrolled Area", type: "primary" },
+        ],
       },
       {
         id: "r3_s2",
@@ -275,8 +282,8 @@ export const mockRoutes = [
         description: "Institutional zone, open road, limited shops",
         tags: [
           { text: "Police Post 800m", type: "primary" },
-          { text: "Low Commercial Activity", type: "secondary" }
-        ]
+          { text: "Low Commercial Activity", type: "secondary" },
+        ],
       },
       {
         id: "r3_s3",
@@ -285,26 +292,26 @@ export const mockRoutes = [
         description: "Residential colony, decent lighting per OSM",
         tags: [
           { text: "Residential", type: "secondary" },
-          { text: "No Hospital Nearby", type: "error" }
-        ]
-      }
+          { text: "No Hospital Nearby", type: "error" },
+        ],
+      },
     ],
 
     review: {
       user: "Sneha M.",
       timeAgo: "Demo entry",
       text: "Long route but feels safer — the road is wide and there are police checkposts. Very few shops though.",
-      avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE"
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuCBMTr__9XPcOSiGWSjhF0eCBPTKbG2BgYe5Y8GCR01njOkmi2j-0rLepsEngTbl2g7mc0T5CVNVJXKKuDlN6YGB2M-2058JA4XP2lNaL4Rx6tS13dQHVdXeZ_abGNw36VNIG7kJ_851_JxKt34_sjC8k04wwajcxKuHqrNyEEoT5MCEu-WPf9f6mKVnvg9HHPWBAtp4mni3sPu4aG2MtCQg4KztoYq-OZHlRPnbakzsXecgtBz6CPE",
     },
 
     missingData: [
       "No hospitals within 1.5 km — Safe Havens score is low",
       "Real-time street light sensor status not available",
       "No verified CCTV data",
-      "Official crime/incident dataset (Historical factor inactive — score is provisional)"
-    ]
-  }
-
+      "Official crime/incident dataset (Historical factor inactive — score is provisional)",
+    ],
+  },
 ];
 
 // Demo-only route scenario. Distance, duration and geometry are loaded from
