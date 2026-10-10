@@ -10,6 +10,12 @@ Run `npm install`, then `npm run dev` to start the local development server.
 
 Run `npm run build`, then serve the generated `dist/` directory on a static host.
 
+## Supabase authentication
+
+Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from your Supabase project's API settings. Restart the Vite server after changing environment variables. The login screen supports email and password sign-in, account creation, and password reset. Email confirmation and reset links use the redirect URL configured in Supabase Auth.
+
+Only use the project's publishable/anon key in this browser app. Never put the service role key in a `VITE_` variable or commit `.env.local`.
+
 ## Google Maps Embed setup
 
 The route detail screen uses the Maps Embed API in a responsive, lazy-loaded iframe. To enable it:

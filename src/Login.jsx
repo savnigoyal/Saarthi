@@ -1,5 +1,6 @@
 ﻿import { useState, useId, useReducer } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { resetPassword, signInWithPassword, signUp } from "./supabaseAuth";
 import "./Login.css";
 
 function MapPreview() {
@@ -78,25 +79,41 @@ function validatePassword(v) {
   return null;
 }
 
-export default function Login({ onNavigate }) {
+export default function Login({ onNavigate, onSignIn }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [mode, setMode] = useState("login");
+  const [notice, setNotice] = useState("");
   const emailId = useId();
   const passwordId = useId();
 
   const emailError   = state.touched.email    ? validateEmail(state.email)       : null;
-  const passwordError = state.touched.password ? validatePassword(state.password) : null;
+  const passwordError = mode !== "reset" && state.touched.password ? validatePassword(state.password) : null;
 
   async function handleSubmit(e) {
     e.preventDefault();
     dispatch({ type: "TOUCH", field: "email" });
     dispatch({ type: "TOUCH", field: "password" });
-    if (validateEmail(state.email) || validatePassword(state.password)) return;
+    if (validateEmail(state.email) || (mode !== "reset" && validatePassword(state.password))) return;
     dispatch({ type: "SUBMIT_START" });
-    await new Promise(r => setTimeout(r, 900));
-    dispatch({
-      type: "SUBMIT_ERROR",
-      message: "Authentication is not configured yet. Connect Supabase or another auth provider to enable sign-in.",
-    });
+    setNotice("");
+    try {
+      if (mode === "reset") {
+        await resetPassword(state.email);
+        dispatch({ type: "SUBMIT_SUCCESS" });
+        setNotice("If an account exists for this email, a password reset link has been sent.");
+      } else if (mode === "signup") {
+        const result = await signUp(state.email, state.password);
+        dispatch({ type: "SUBMIT_SUCCESS" });
+        if (result.session) onSignIn?.();
+        else setNotice("Account created. Check your email to confirm your address, then sign in.");
+      } else {
+        await signInWithPassword(state.email, state.password);
+        dispatch({ type: "SUBMIT_SUCCESS" });
+        onSignIn?.();
+      }
+    } catch (error) {
+      dispatch({ type: "SUBMIT_ERROR", message: error.message || "Unable to connect to Supabase." });
+    }
   }
 
   return (
@@ -129,8 +146,8 @@ export default function Login({ onNavigate }) {
           </div>
 
           <div className="lp-form-head">
-            <h2 className="lp-form-head__title">Welcome back</h2>
-            <p className="lp-form-head__sub">Sign in to continue to your account.</p>
+            <h2 className="lp-form-head__title">{mode === "signup" ? "Create your account" : mode === "reset" ? "Reset your password" : "Welcome back"}</h2>
+            <p className="lp-form-head__sub">{mode === "signup" ? "Create an account to get started." : mode === "reset" ? "We’ll email you a password reset link." : "Sign in to continue to your account."}</p>
           </div>
 
           <form className="lp-form" onSubmit={handleSubmit} noValidate>
@@ -158,11 +175,11 @@ export default function Login({ onNavigate }) {
               )}
             </div>
 
-            <div className="lp-field">
+            {mode !== "reset" && <div className="lp-field">
               <div className="lp-label-row">
                 <label htmlFor={passwordId} className="lp-label">Password</label>
                 <button type="button" className="lp-forgot" tabIndex={0}
-                  onClick={() => alert("Password reset — connect an auth provider first.")}>
+                  onClick={() => { setMode("reset"); setNotice(""); dispatch({ type: "SET_FIELD", field: "error", value: null }); }}>
                   Forgot password?
                 </button>
               </div>
@@ -170,7 +187,7 @@ export default function Login({ onNavigate }) {
                 <input
                   id={passwordId}
                   type={state.showPassword ? "text" : "password"}
-                  autoComplete="current-password"
+                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
                   className={"lp-input lp-input--with-icon" + (passwordError ? " lp-input--error" : "")}
                   value={state.password}
                   onChange={e => dispatch({ type: "SET_FIELD", field: "password", value: e.target.value })}
@@ -197,7 +214,7 @@ export default function Login({ onNavigate }) {
                   {passwordError}
                 </span>
               )}
-            </div>
+            </div>}
 
             {state.error && (
               <div className="lp-error-banner" role="alert">
@@ -205,11 +222,12 @@ export default function Login({ onNavigate }) {
                 <span>{state.error}</span>
               </div>
             )}
+            {notice && <div className="lp-success-banner" role="status">{notice}</div>}
 
             <button type="submit" className="lp-submit" disabled={state.submitting} aria-busy={state.submitting}>
               {state.submitting
-                ? <><Loader2 size={15} className="lp-spin" aria-hidden="true"/><span>Signing in...</span></>
-                : <><span>Sign in</span><ArrowRight size={15} aria-hidden="true"/></>
+                ? <><Loader2 size={15} className="lp-spin" aria-hidden="true"/><span>{mode === "signup" ? "Creating account..." : mode === "reset" ? "Sending link..." : "Signing in..."}</span></>
+                : <><span>{mode === "signup" ? "Create account" : mode === "reset" ? "Send reset link" : "Sign in"}</span><ArrowRight size={15} aria-hidden="true"/></>
               }
             </button>
           </form>
@@ -231,9 +249,9 @@ export default function Login({ onNavigate }) {
           </button>
 
           <p className="lp-signup-link">
-            New here?{" "}
-            <button type="button" className="lp-link" onClick={() => onNavigate?.("signup")}>
-              Create an account
+            {mode === "reset" ? "Remembered your password? " : mode === "signup" ? "Already have an account? " : "New here? "}
+            <button type="button" className="lp-link" onClick={() => { setMode(mode === "login" ? "signup" : "login"); setNotice(""); }}>
+              {mode === "login" ? "Create an account" : "Sign in"}
             </button>
           </p>
 

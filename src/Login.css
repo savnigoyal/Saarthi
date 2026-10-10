@@ -371,6 +371,16 @@
   color: #C0392B;
 }
 
+.lp-success-banner {
+  padding: 11px 13px;
+  background: #eaf7f2;
+  border: 1px solid #b8dfd0;
+  border-radius: 6px;
+  color: #185c49;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 /* ── Submit button ────────────────────────────────────────── */
 .lp-submit {
   display: flex;
