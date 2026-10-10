@@ -108,7 +108,7 @@
 html, body, #root { min-height: 100%; }
 body { background: #080d19; }
 .app-shell { width: 100%; max-width: 480px; min-height: 100dvh; margin-inline: auto; background: #0b1326; border-inline: 1px solid #252d40; box-shadow: 0 0 42px #0008; }
-.app-shell > header { position: relative; }
+.app-shell > header { position: static; }
 .app-shell > header > div:first-child { min-height: 56px; height: 56px; }
 .app-shell > header .w-11 { width: 36px; height: 36px; }
 .app-shell > header .w-8 { width: 28px; height: 28px; }

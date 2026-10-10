@@ -302,7 +302,7 @@ export default function App() {
         </button>
       </div>
 
-      <header className="relative z-10 bg-surface/85 pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
+      <header className="bg-surface/85 pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
         <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
           <div className="flex items-center gap-space-xs min-w-0">
             <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
