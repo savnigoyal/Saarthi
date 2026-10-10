@@ -578,10 +578,6 @@ export default function SafeHavens({ onNavigate }) {
 
         {/* Section Header */}
         <div className="haven-section-head">
-          <div className="haven-section-title-wrap">
-            <h2 className="haven-section-title">Closest Safe Havens</h2>
-            <span className="haven-live-badge">Live</span>
-          </div>
           <div className="haven-sort-wrap">
             <span>Sort:</span>
             <select
