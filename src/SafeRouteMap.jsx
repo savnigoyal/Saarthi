@@ -3,12 +3,22 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './SafeRouteMap.css';
 
-const DEFAULT_CENTER = [20, 0];
-const FOOT_ROUTER = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
-const JAIPUR_MUJ_DEMO = {
-  origin: { latitude: 26.9202, longitude: 75.786919, label: 'Jaipur Junction (demo start)' },
-  destination: { latitude: 26.843656, longitude: 75.566387, label: 'Manipal University Jaipur campus (demo destination)' },
+const ORIGIN = {
+  latitude: 26.843656,
+  longitude: 75.566387,
+  label: 'Manipal University Jaipur (demo start)',
 };
+
+const DEMO_DESTINATIONS = [
+  { id: 'muj-gate', label: 'MUJ Main Gate (demo)', latitude: 26.8409, longitude: 75.5676 },
+  { id: 'dehmi', label: 'Dehmi Kalan (demo point)', latitude: 26.8355, longitude: 75.5677 },
+  { id: 'mahapura', label: 'Mahapura Road (demo point)', latitude: 26.8505, longitude: 75.5740 },
+  { id: 'junction', label: 'Nearby road junction (demo)', latitude: 26.8493, longitude: 75.5608 },
+];
+
+const ROUTE_COLORS = ['#57f1db', '#a78bfa', '#ffb86b'];
+const DEMO_SCORES = [82, 76, 69];
+const FOOT_ROUTER = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
 
 function formatDistance(meters) {
   return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
@@ -16,238 +26,289 @@ function formatDistance(meters) {
 
 function formatDuration(seconds) {
   const minutes = Math.max(1, Math.round(seconds / 60));
-  if (minutes < 60) return `${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  const remaining = minutes % 60;
-  return remaining ? `${hours} hr ${remaining} min` : `${hours} hr`;
+  if (minutes < 60) return `${minutes} min walk`;
+  return `${Math.floor(minutes / 60)} hr ${minutes % 60} min walk`;
+}
+
+function haversineMeters(a, b) {
+  const radians = (degrees) => degrees * Math.PI / 180;
+  const dLat = radians(b.latitude - a.latitude);
+  const dLon = radians(b.longitude - a.longitude);
+  const value = Math.sin(dLat / 2) ** 2
+    + Math.cos(radians(a.latitude)) * Math.cos(radians(b.latitude)) * Math.sin(dLon / 2) ** 2;
+  return 6371000 * 2 * Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
+}
+
+function buildIllustrativeRoutes(destination) {
+  const directDistance = haversineMeters(ORIGIN, destination);
+  const deltaLat = destination.latitude - ORIGIN.latitude;
+  const deltaLon = (destination.longitude - ORIGIN.longitude) * Math.cos(ORIGIN.latitude * Math.PI / 180);
+  const length = Math.hypot(deltaLat, deltaLon) || 1;
+  const perpendicularLat = -deltaLon / length;
+  const perpendicularLon = deltaLat / length / Math.cos(ORIGIN.latitude * Math.PI / 180);
+
+  return [-0.0015, 0, 0.0015].map((offset, index) => {
+    const coordinates = Array.from({ length:  ninePoints }, (_, pointIndex) => {
+      const t = pointIndex / (ninePoints - 1);
+      const curve = Math.sin(Math.PI * t) * offset;
+      return [
+        ORIGIN.longitude + (destination.longitude - ORIGIN.longitude) * t + perpendicularLon * curve,
+        ORIGIN.latitude + (destination.latitude - ORIGIN.latitude) * t + perpendicularLat * curve,
+      ];
+    });
+    const distance = directDistance * [1.22, 1.36, 1.52][index];
+    return {
+      id: `sample-${index + 1}`,
+      name: `Sample alternate ${index + 1}`,
+      distance,
+      duration: distance / 75 * 60,
+      geometry: { type: 'LineString', coordinates },
+      score: DEMO_SCORES[index],
+      illustrative: true,
+    };
+  });
+}
+
+const ninePoints = 9;
+
+function buildOsmUrl(route) {
+  const points = route.geometry?.coordinates || [];
+  const waypoints = points.length > 2
+    ? Array.from({ length: Math.min(8, points.length) }, (_, i) => points[Math.round(i * (points.length - 1) / (Math.min(8, points.length) - 1))])
+    : [[ORIGIN.longitude, ORIGIN.latitude], [route.destination.longitude, route.destination.latitude]];
+  const routeParam = waypoints.map(([longitude, latitude]) => `${latitude},${longitude}`).join(';');
+  return `https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=${encodeURIComponent(routeParam)}`;
 }
 
 export default function SafeRouteMap() {
-  const [draft, setDraft] = useState('');
   const [destination, setDestination] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [locationLabel, setLocationLabel] = useState('');
-  const [locationState, setLocationState] = useState('idle');
-  const [locationMessage, setLocationMessage] = useState('Your location is only requested when you tap the button.');
-  const [destinationError, setDestinationError] = useState('');
+  const [destinationQuery, setDestinationQuery] = useState('');
+  const [routes, setRoutes] = useState([]);
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [loadingRoutes, setLoadingRoutes] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [route, setRoute] = useState(null);
-  const [routeMessage, setRouteMessage] = useState('');
-  const [mapOpen, setMapOpen] = useState(false);
-  const [mapInstance, setMapInstance] = useState(null);
+  const [message, setMessage] = useState('Choose a nearby demo destination or search for a place in Jaipur.');
+  const [error, setError] = useState('');
   const mapElement = useRef(null);
   const mapRef = useRef(null);
+  const routeLayer = useRef(null);
+  const originMarker = useRef(null);
   const destinationMarker = useRef(null);
-  const locationMarker = useRef(null);
-  const routeLine = useRef(null);
-  const routeRequestKey = useRef('');
 
   useEffect(() => {
-    if (!mapOpen || !mapElement.current || mapRef.current) return undefined;
-
-    let cancelled = false;
-    let createdMap;
-    Promise.resolve().then(() => {
-      if (cancelled || !mapElement.current) return;
-      createdMap = L.map(mapElement.current, { zoomControl: true }).setView(DEFAULT_CENTER, 2);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(createdMap);
-      destinationMarker.current = L.circleMarker(DEFAULT_CENTER, { radius: 8, color: '#08251f', weight: 2, fillColor: '#57f1db', fillOpacity: 1 });
-      locationMarker.current = L.circleMarker(DEFAULT_CENTER, { radius: 7, color: '#ffffff', weight: 2, fillColor: '#438cff', fillOpacity: 1 });
-      routeLine.current = L.geoJSON(null, { style: { color: '#57f1db', weight: 5, opacity: 0.9 } }).addTo(createdMap);
-      createdMap.on('click', (event) => {
-        setDestination({ latitude: event.latlng.lat, longitude: event.latlng.lng, label: 'Selected map point' });
-        setDraft('');
-        setDestinationError('');
-        setRoute(null);
-        setRouteMessage('');
-      });
-      mapRef.current = createdMap;
-      setMapInstance(createdMap);
-      window.setTimeout(() => createdMap?.invalidateSize(), 0);
-    }).catch(() => setRouteMessage('The map could not be loaded. Check your connection and try again.'));
-
+    if (!mapElement.current || mapRef.current) return undefined;
+    const map = L.map(mapElement.current, { zoomControl: true }).setView([ORIGIN.latitude, ORIGIN.longitude], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    routeLayer.current = L.featureGroup().addTo(map);
+    originMarker.current = L.circleMarker([ORIGIN.latitude, ORIGIN.longitude], {
+      radius: 8, color: '#08251f', weight: 2, fillColor: '#57f1db', fillOpacity: 1,
+    }).addTo(map).bindPopup('Manipal University Jaipur · demo start');
+    destinationMarker.current = L.circleMarker([ORIGIN.latitude, ORIGIN.longitude], {
+      radius: 7, color: '#ffffff', weight: 2, fillColor: '#438cff', fillOpacity: 1,
+    });
+    mapRef.current = map;
+    window.setTimeout(() => map.invalidateSize(), 0);
     return () => {
-      cancelled = true;
-      createdMap?.remove();
-      if (mapRef.current === createdMap) mapRef.current = null;
+      map.remove();
+      mapRef.current = null;
+      routeLayer.current = null;
+      originMarker.current = null;
       destinationMarker.current = null;
-      locationMarker.current = null;
-      routeLine.current = null;
     };
-  }, [mapOpen]);
+  }, []);
 
   useEffect(() => {
-    if (!mapInstance) return;
+    const map = mapRef.current;
+    if (!map || !routeLayer.current) return;
+    routeLayer.current.clearLayers();
+    routes.forEach((route, index) => {
+      const selected = route.id === selectedRouteId;
+      L.geoJSON(route.geometry, {
+        style: {
+          color: ROUTE_COLORS[index % ROUTE_COLORS.length],
+          weight: selected ? 7 : 4,
+          opacity: selected ? 1 : 0.7,
+          dashArray: route.illustrative ? '7 7' : undefined,
+        },
+      }).addTo(routeLayer.current);
+    });
     if (destination) {
-      destinationMarker.current.setLatLng([destination.latitude, destination.longitude]).addTo(mapInstance);
-      if (!location && !route) mapInstance.setView([destination.latitude, destination.longitude], 14);
-    }
-    if (location) {
-      locationMarker.current.setLatLng([location.latitude, location.longitude]).addTo(mapInstance);
-      if (!destination) mapInstance.setView([location.latitude, location.longitude], 14);
-    }
-    if (route) {
-      routeLine.current.clearLayers().addData(route.geometry);
-      const bounds = routeLine.current.getBounds();
-      if (bounds.isValid()) mapInstance.fitBounds(bounds, { padding: [24, 24] });
+      destinationMarker.current.setLatLng([destination.latitude, destination.longitude]).addTo(map);
+      destinationMarker.current.bindPopup(destination.label);
     } else {
-      routeLine.current.clearLayers();
+      destinationMarker.current.remove();
     }
-  }, [mapInstance, destination, location, route]);
+    const bounds = routeLayer.current.getBounds();
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [28, 28] });
+    else if (destination) map.fitBounds([[ORIGIN.latitude, ORIGIN.longitude], [destination.latitude, destination.longitude]], { padding: [28, 28] });
+  }, [routes, selectedRouteId, destination]);
 
-  useEffect(() => {
-    if (!location || !destination) {
-      routeRequestKey.current = '';
-      return undefined;
-    }
-
-    const key = `${location.latitude},${location.longitude}|${destination.latitude},${destination.longitude}`;
-    if (routeRequestKey.current === key) return undefined;
-    routeRequestKey.current = key;
-    const controller = new AbortController();
-    setRouteMessage('Getting a walking route…');
-    const coordinates = `${location.longitude},${location.latitude};${destination.longitude},${destination.latitude}`;
-    fetch(`${FOOT_ROUTER}/${coordinates}?overview=full&geometries=geojson&steps=false`, { signal: controller.signal })
-      .then(async (response) => {
-        if (response.status === 429) throw new Error('The walking route service is rate limited. Please wait a little and try again.');
-        if (!response.ok) throw new Error('The walking route service is temporarily unavailable. Please try again later.');
-        return response.json();
-      })
-      .then((data) => {
-        if (data.code !== 'Ok' || !data.routes?.length) throw new Error('No walking route was found between these points. Try a nearby destination.');
-        setRoute(data.routes[0]);
-        setRouteMessage('');
-      })
-      .catch((error) => {
-        if (error.name !== 'AbortError') setRouteMessage(error.message || 'Could not get a walking route. Please try again.');
-      });
-    return () => controller.abort();
-  }, [location, destination]);
-
-  function requestLocation() {
-    setRoute(null);
-    setRouteMessage('');
-    if (!navigator.geolocation) {
-      setLocationState('error');
-      setLocationMessage('Location is not available in this browser. You can still select a destination.');
+  async function findRoutes(nextDestination = destination) {
+    if (!nextDestination) {
+      setError('Choose a destination before requesting routes.');
       return;
     }
-    setLocationState('loading');
-    setLocationMessage('Requesting your location…');
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
-      setLocation({ latitude: coords.latitude, longitude: coords.longitude });
-      setLocationLabel('Your current location');
-      setLocationState('ready');
-      setLocationMessage('Current location detected.');
-      setMapOpen(true);
-    }, (error) => {
-      setLocationState('error');
-      const messages = {
-        1: 'Location permission was denied. Allow location access in browser settings and retry.',
-        2: 'Your location is unavailable right now. Check your device location settings and retry.',
-        3: 'Location detection timed out. Check GPS reception and retry.',
-      };
-      setLocationMessage(messages[error.code] || 'Could not detect your location. Please retry.');
-    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    setDestination(nextDestination);
+    setLoadingRoutes(true);
+    setError('');
+    setRoutes([]);
+    setSelectedRouteId(null);
+    setMessage('Finding walking route options…');
+    const coordinates = `${ORIGIN.longitude},${ORIGIN.latitude};${nextDestination.longitude},${nextDestination.latitude}`;
+    try {
+      const response = await fetch(`${FOOT_ROUTER}/${coordinates}?overview=full&geometries=geojson&steps=false&alternatives=3`);
+      if (!response.ok) throw new Error('The walking route service is unavailable right now. Showing illustrative demo paths instead.');
+      const data = await response.json();
+      if (data.code !== 'Ok' || !data.routes?.length) throw new Error('No mapped walking route was returned. Showing illustrative demo paths instead.');
+      const liveRoutes = data.routes.slice(0, 3).map((route, index) => ({
+        id: `live-${index + 1}`,
+        name: index === 0 ? 'Mapped route 1' : `Mapped alternative ${index + 1}`,
+        distance: route.distance,
+        duration: route.duration,
+        geometry: route.geometry,
+        score: DEMO_SCORES[index],
+        illustrative: false,
+        destination: nextDestination,
+      }));
+      const alternates = buildIllustrativeRoutes(nextDestination).map((route, index) => ({
+        ...route,
+        id: `sample-${liveRoutes.length + index + 1}`,
+        name: `Illustrative alternate ${liveRoutes.length + index + 1}`,
+        score: DEMO_SCORES[liveRoutes.length + index] ?? 64,
+        destination: nextDestination,
+      }));
+      const combined = [...liveRoutes, ...alternates].slice(0, 3);
+      setRoutes(combined);
+      setSelectedRouteId(combined[0]?.id || null);
+      setMessage(liveRoutes.length < 3
+        ? `${liveRoutes.length} mapped path${liveRoutes.length === 1 ? '' : 's'} returned. Sample paths fill the remaining options.`
+        : 'Three mapped walking paths found. Safety scores are illustrative demo values.');
+    } catch (routeError) {
+      const samples = buildIllustrativeRoutes(nextDestination).map((route, index) => ({
+        ...route,
+        destination: nextDestination,
+        name: `Illustrative path ${index + 1}`,
+      }));
+      setRoutes(samples);
+      setSelectedRouteId(samples[0].id);
+      setMessage('Showing illustrative paths because live walking routes are unavailable. Safety scores are sample values.');
+      setError(routeError.message);
+    } finally {
+      setLoadingRoutes(false);
+    }
   }
 
-  function loadJaipurCampusDemo() {
-    setLocation({ latitude: JAIPUR_MUJ_DEMO.origin.latitude, longitude: JAIPUR_MUJ_DEMO.origin.longitude });
-    setLocationLabel(JAIPUR_MUJ_DEMO.origin.label);
-    setDestination(JAIPUR_MUJ_DEMO.destination);
-    setDraft('');
-    setDestinationError('');
-    setRoute(null);
-    setRouteMessage('');
-    setLocationState('ready');
-    setLocationMessage('Demo start point selected: Jaipur Junction. This is not your live location.');
-    setMapOpen(true);
-  }
-
-  async function submitDestination(event) {
+  async function searchDestination(event) {
     event.preventDefault();
-    if (searching) return;
-    const value = draft.trim();
-    if (!value || value.length > 200) {
-      setDestinationError('Enter a destination between 1 and 200 characters.');
+    if (searching || loadingRoutes) return;
+    const query = destinationQuery.trim();
+    if (!query) {
+      setError('Enter a destination to search.');
       return;
     }
     setSearching(true);
-    setDestinationError('');
-    setRoute(null);
-    setRouteMessage('');
+    setError('');
+    setDestination(null);
+    setRoutes([]);
+    setSelectedRouteId(null);
     try {
-      let results = [];
-      for (const query of [value, `${value}, India`]) {
-        const params = new URLSearchParams({ q: query, format: 'jsonv2', limit: '1' });
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
-        if (response.status === 429) throw new Error('Place search is rate limited. Please wait before searching again.');
-        if (!response.ok) throw new Error('Place search is temporarily unavailable. Please try again later.');
-        results = await response.json();
-        if (results.length) break;
-      }
-      if (!results.length) {
-        setMapOpen(true);
-        throw new Error('No matching place was found. Try adding the city, or tap the map below to choose a point.');
-      }
+      const params = new URLSearchParams({
+        q: query,
+        format: 'jsonv2',
+        limit: '1',
+        countrycodes: 'in',
+        viewbox: '75.48,26.90,75.65,26.78',
+        bounded: '1',
+      });
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+      if (!response.ok) throw new Error('Place search is unavailable. Choose one of the demo destinations instead.');
+      const results = await response.json();
+      if (!results.length) throw new Error('No nearby place found. Try a different name or choose a demo destination.');
       const result = results[0];
-      setDestination({ latitude: Number(result.lat), longitude: Number(result.lon), label: result.display_name });
-      setMapOpen(true);
-      setRouteMessage('');
-    } catch (error) {
-      setDestinationError(error.message || 'Could not search for that place. Please try again.');
+      const searchedDestination = {
+        id: `place-${result.place_id}`,
+        label: result.display_name.split(',').slice(0, 3).join(','),
+        latitude: Number(result.lat),
+        longitude: Number(result.lon),
+      };
+      setDestination(searchedDestination);
+      await findRoutes(searchedDestination);
+    } catch (searchError) {
+      setError(searchError.message || 'Could not search for that place.');
     } finally {
       setSearching(false);
     }
   }
 
+  const selectedRoute = routes.find((route) => route.id === selectedRouteId);
+
   return (
-    <section className="safe-map-card" aria-labelledby="safe-map-title">
+    <section className="safe-map-card route-planner" aria-labelledby="safe-map-title">
       <div className="safe-map-heading">
         <div>
-          <div className="eyebrow"><span className="material-symbols-outlined">map</span>OpenStreetMap</div>
-          <h3 id="safe-map-title">Plan your walk</h3>
+          <div className="eyebrow"><span className="material-symbols-outlined">route</span>JAIPUR · DEMO ROUTE PLANNER</div>
+          <h3 id="safe-map-title">Routes from Manipal University Jaipur</h3>
+          <p className="route-planner-subtitle">Start point is a demo location. Select a nearby destination to compare paths.</p>
         </div>
-        <button type="button" className="safe-map-location" onClick={requestLocation} disabled={locationState === 'loading'}>
-          <span className={`material-symbols-outlined ${locationState === 'loading' ? 'safe-map-spin' : ''}`}>{locationState === 'loading' ? 'progress_activity' : 'my_location'}</span>
-          {locationState === 'loading' ? 'Finding you…' : location ? 'Refresh location' : 'Use my location'}
+        <span className="route-demo-badge"><span className="material-symbols-outlined">science</span>Sample safety scores</span>
+      </div>
+
+      <div className="route-planner-form">
+        <div className="route-planner-origin"><span className="material-symbols-outlined">trip_origin</span><span><small>START</small><strong>Manipal University Jaipur</strong></span></div>
+        <label className="route-destination-label" htmlFor="route-destination">DESTINATION</label>
+        <select id="route-destination" value={destination?.id || ''} disabled={loadingRoutes || searching} onChange={(event) => {
+          const next = DEMO_DESTINATIONS.find((place) => place.id === event.target.value);
+          setDestination(next || null);
+          setRoutes([]);
+          setError('');
+          setMessage(next ? 'Destination selected. Choose “Show 3 routes” to compare paths.' : 'Choose a nearby demo destination or search for a place in Jaipur.');
+        }}>
+          <option value="">Choose a nearby destination…</option>
+          {DEMO_DESTINATIONS.map((place) => <option key={place.id} value={place.id}>{place.label}</option>)}
+          {destination && !DEMO_DESTINATIONS.some((place) => place.id === destination.id) && <option value={destination.id}>{destination.label}</option>}
+        </select>
+        <button className="route-plan-button" type="button" onClick={() => findRoutes()} disabled={!destination || loadingRoutes}>
+          <span className="material-symbols-outlined">alt_route</span>
+          {loadingRoutes ? 'Finding routes…' : 'Show 3 routes'}
         </button>
       </div>
 
-      <p className={`safe-map-location-status ${locationState === 'error' ? 'is-error' : ''}`} role="status">{locationMessage}</p>
-      <form className="safe-map-search" onSubmit={submitDestination}>
-        <label className="sr-only" htmlFor="safe-map-destination">Destination address or place</label>
-        <input id="safe-map-destination" value={draft} onChange={(event) => setDraft(event.target.value)} maxLength={200} placeholder="Search a place or address" autoComplete="street-address" />
-        <button type="submit" className="safe-map-submit" disabled={searching}>{searching ? 'Searching…' : 'Find place'}</button>
+      <form className="route-place-search" onSubmit={searchDestination}>
+        <label className="sr-only" htmlFor="route-place-query">Search for a nearby place</label>
+        <input id="route-place-query" value={destinationQuery} onChange={(event) => setDestinationQuery(event.target.value)} placeholder="Or search a nearby place in Jaipur" />
+        <button type="submit" disabled={searching || loadingRoutes}>{searching ? 'Searching…' : 'Search place'}</button>
       </form>
-      <button type="button" className="safe-map-demo" onClick={loadJaipurCampusDemo}>Try Jaipur demo: Jaipur Junction → MUJ</button>
-      <p className="safe-map-demo-note">The map planner is separate from the sample scored routes above. Live place search and route lookup may be unavailable; map-planned routes do not get a safety score.</p>
-        {destinationError && <p className="safe-map-error" role="alert">{destinationError}</p>}
 
-      {!mapOpen ? (
-        <button className="safe-map-launch" type="button" onClick={() => setMapOpen(true)}>
-          <span className="material-symbols-outlined">map</span>
-          <strong>Open interactive map</strong>
-          <span>Tap the map to choose a destination.</span>
-        </button>
-      ) : (
-        <div className="safe-map-frame" aria-label="Interactive map. Tap a point to choose it as your destination.">
-          <div className="safe-map-canvas" ref={mapElement} />
+      <div className="route-planner-origin-note"><span className="material-symbols-outlined">info</span>Live walking paths are requested when available. Safety scores are sample estimates and are not verified.</div>
+
+      <div className="safe-map-frame route-planner-map" aria-label="Map showing route alternatives from Manipal University Jaipur">
+        <div className="safe-map-canvas" ref={mapElement} />
+      </div>
+
+      <p className={`route-planner-message ${error ? 'is-error' : ''}`} role={error ? 'alert' : 'status'}>{error || message}</p>
+
+      {routes.length > 0 && (
+        <div className="route-options" aria-label="Walking route alternatives">
+          {routes.map((route, index) => (
+            <article key={route.id} className={`route-option ${route.id === selectedRouteId ? 'is-selected' : ''}`}>
+              <button className="route-option-select" type="button" onClick={() => setSelectedRouteId(route.id)} aria-pressed={route.id === selectedRouteId}>
+                <span className="route-option-color" style={{ backgroundColor: ROUTE_COLORS[index % ROUTE_COLORS.length] }} />
+                <span className="route-option-copy"><strong>{route.name}</strong><small>{route.illustrative ? 'Illustrative path' : 'OpenStreetMap walking path'}{index === 0 ? ' · Recommended demo option' : ''}</small></span>
+                <span className="route-option-score"><strong>{route.score}</strong><small>/100 sample</small></span>
+              </button>
+              <div className="route-option-meta"><span>{formatDistance(route.distance)}</span><span>{formatDuration(route.duration)}</span></div>
+              <a className="route-option-open" href={buildOsmUrl(route)} target="_blank" rel="noreferrer">
+                <span className="material-symbols-outlined">open_in_new</span>Open route in OpenStreetMap
+              </a>
+            </article>
+          ))}
         </div>
       )}
 
-      {destination && <p className="safe-map-destination">Destination: {destination.label}</p>}
-      {location && locationLabel && <p className="safe-map-destination">Start: {locationLabel}</p>}
-      {(routeMessage || route) && <div className={`safe-map-route ${routeMessage && routeMessage !== 'Getting a walking route…' ? 'is-error' : ''}`} role="status">
-        {route ? <><strong>Walking route</strong><span>{formatDistance(route.distance)} · about {formatDuration(route.duration)}</span></> : <span>{routeMessage}</span>}
-      </div>}
-      <div className="safe-map-footer">
-        <p>Walking routes and place search use public OpenStreetMap community services. Coverage and availability vary; route data does not indicate safety conditions.</p>
-        {destination && location && <a className="safe-map-open" href={`https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=${location.latitude}%2C${location.longitude}%3B${destination.latitude}%2C${destination.longitude}`} target="_blank" rel="noreferrer">Open route in OSM</a>}
-      </div>
+      {selectedRoute && <p className="route-planner-footer">Selected: {selectedRoute.name}. Route links open OpenStreetMap directions for this path’s waypoints; its safety score is sample data.</p>}
     </section>
   );
 }

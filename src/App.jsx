@@ -306,7 +306,7 @@ export default function App() {
             <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
               <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
             </button>
-            <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Haven Detail</h1>
+            <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Safety Route Planner</h1>
           </div>
           <div className="flex items-center gap-space-sm shrink-0">
             <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-primary">
@@ -317,23 +317,28 @@ export default function App() {
           </div>
         </div>
 
-        <div className="px-gutter pb-3 flex gap-2 overflow-x-auto">
-          {routes.map(r => (
-            <button
-              key={r.id}
-              onClick={() => setSelectedRouteId(r.id)}
-              className={`px-4 py-2 rounded-full whitespace-nowrap font-label-sm font-bold transition-colors ${selectedRouteId === r.id ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
-            >
-              {r.name} · {Math.round(r.weightedScore)}/100
-            </button>
-          ))}
+        <div className="px-gutter pb-3">
+          <div className="mb-2 text-[9px] font-extrabold uppercase tracking-widest text-on-surface-variant">Sample score examples</div>
+          <div className="flex gap-2 overflow-x-auto">
+            {routes.map(r => (
+              <button
+                key={r.id}
+                onClick={() => setSelectedRouteId(r.id)}
+                className={`px-4 py-2 rounded-full whitespace-nowrap font-label-sm font-bold transition-colors ${selectedRouteId === r.id ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
+              >
+                {r.name} · {Math.round(r.weightedScore)}/100
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
       <main className="app-main flex flex-col relative w-full bg-surface flex-1">
-        <div className="app-content flex flex-col w-full pb-safe px-gutter pt-space-md gap-space-lg max-w-lg mx-auto mb-20">
+        <div className="app-content flex flex-col w-full pb-40 px-gutter pt-space-md gap-space-lg max-w-5xl mx-auto">
+          <SafeRouteMap />
+
           <section className="route-intro">
-            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Sample route comparison · demo scores</div>
+            <div className="eyebrow"><span className="material-symbols-outlined">verified_user</span>Sample score breakdown</div>
             <h2>{selectedRoute.name}</h2>
             <div className="route-meta">
               <span><span className="material-symbols-outlined">route</span>{selectedRoute.distance}</span>
@@ -433,8 +438,6 @@ export default function App() {
             </div>
           </div>
 
-          <SafeRouteMap />
-
           {selectedRoute.review && (
             <div className="review-card flex items-center gap-space-sm p-space-md rounded-xl bg-surface-container-low shadow-sm">
               <img className="w-14 h-14 rounded-full object-cover shrink-0" src={selectedRoute.review.avatar} alt="Reviewer" />
@@ -455,7 +458,7 @@ export default function App() {
           }}
           className="w-full h-12 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] transition-transform"
         >
-          <span>Continue with sample route</span>
+          <span>Guardian demo for sample route</span>
           <span className="material-symbols-outlined text-xl">arrow_forward</span>
         </button>
         <button onClick={() => setCurrentTab('havens')} className="w-full h-10 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">
