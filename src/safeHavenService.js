@@ -410,11 +410,11 @@ export function calculateHavenSafetyScore(haven) {
 }
 
 /**
- * Opens navigation in Google Maps walking directions.
+ * Opens the selected place in OpenStreetMap without requiring an API key.
  */
 export function navigateToHaven(haven) {
   if (!haven || haven.latitude == null || haven.longitude == null) return;
-  const url = `https://www.google.com/maps/dir/?api=1&destination=${haven.latitude},${haven.longitude}&travelmode=walking`;
+  const url = `https://www.openstreetmap.org/?mlat=${haven.latitude}&mlon=${haven.longitude}#map=17/${haven.latitude}/${haven.longitude}`;
   window.open(url, "_blank", "noopener,noreferrer");
 }
 

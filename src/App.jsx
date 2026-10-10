@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAlternativeRoutes } from './mockService';
 import GuardianCircle from './GuardianCircle';
-import RouteMap from './RouteMap';
+import SafeRouteMap from './SafeRouteMap';
 import SafeHavens from './SafeHavens';
 import Login from './Login';
 
@@ -148,7 +148,7 @@ export default function App() {
         <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
           <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
             <div className="flex items-center gap-space-xs min-w-0">
-              <button className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
+              <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
                 <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
               </button>
               <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Haven Detail</h1>
@@ -172,7 +172,7 @@ export default function App() {
       <header className="sticky top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_4px_24px_rgba(6,14,32,0.80)]">
         <div className="h-16 px-gutter flex items-center justify-between gap-space-sm">
           <div className="flex items-center gap-space-xs min-w-0">
-            <button className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
+            <button type="button" aria-label="Back to safe havens" onClick={() => setCurrentTab('havens')} className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container-high transition-colors -ml-2 shrink-0">
               <span className="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
             </button>
             <h1 className="font-headline-md text-headline-md font-bold text-on-surface truncate leading-tight">Haven Detail</h1>
@@ -210,6 +210,8 @@ export default function App() {
               <span><span className="material-symbols-outlined">verified</span>{selectedRoute.dataConfidence} confidence</span>
             </div>
           </section>
+
+          <SafeRouteMap />
 
           <div className="score-card flex flex-col items-center bg-surface-container rounded-xl p-space-lg shadow-xl relative overflow-hidden text-center">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80"></div>

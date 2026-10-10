@@ -12,7 +12,6 @@ import {
   calculateDistance,
   formatDistance,
   estimateWalkingTime,
-  getNearbySafeHavens,
   searchSafeHavens,
   filterSafeHavens,
   sortByDistance,
@@ -22,7 +21,7 @@ import {
 } from './safeHavenService';
 
 // Leaflet map controller for dynamic panning
-function MapController({ center, userLocation }) {
+function MapController({ center }) {
   const map = useMap();
 
   useEffect(() => {
@@ -78,7 +77,7 @@ function getHavenIcon(haven) {
   });
 }
 
-export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
+export default function SafeHavens({ onNavigate }) {
   // 1. Data states
   const [allHavens, setAllHavens] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -97,6 +96,15 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('distance'); // 'distance' | 'name'
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [nearbyOnly, setNearbyOnly] = useState(false);
+  const [savedOnly, setSavedOnly] = useState(false);
+  const [voiceMessage, setVoiceMessage] = useState('');
+  const speechRecognition = useRef(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportCategory, setReportCategory] = useState('map-data');
+  const [reportDetails, setReportDetails] = useState('');
+  const [reportSubmitted, setReportSubmitted] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('saferoute.bookmarks') || '[]');
@@ -123,6 +131,8 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
   useEffect(() => {
     localStorage.setItem('saferoute.bookmarks', JSON.stringify(bookmarkedIds));
   }, [bookmarkedIds]);
+
+  useEffect(() => () => speechRecognition.current?.stop(), []);
 
   // INITIALIZATION: Load data & request location
   useEffect(() => {
@@ -227,8 +237,11 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
       result = [...result].sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    if (nearbyOnly) result = result.filter((haven) => haven.distance != null && haven.distance <= SAFE_PERIMETER_METERS / 1000);
+    if (savedOnly) result = result.filter((haven) => bookmarkedIds.includes(haven.id));
+
     return result;
-  }, [havensWithDistance, selectedCategory, searchQuery, sortBy]);
+  }, [havensWithDistance, selectedCategory, searchQuery, sortBy, nearbyOnly, savedOnly, bookmarkedIds]);
 
   // Handlers
   const handleToggleBookmark = (id) => {
@@ -269,6 +282,42 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
     });
     setMapCenter([DEMO_LOCATION.latitude, DEMO_LOCATION.longitude]);
     setLocationError(null);
+  };
+
+  const handleVoiceSearch = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceMessage('Voice search is not supported in this browser. Type a place name instead.');
+      return;
+    }
+    speechRecognition.current?.stop();
+    const recognition = new SpeechRecognition();
+    speechRecognition.current = recognition;
+    recognition.lang = navigator.language || 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    setVoiceMessage('Listening…');
+    recognition.onresult = (event) => {
+      const transcript = event.results?.[0]?.[0]?.transcript?.trim();
+      if (transcript) setSearchQuery(transcript);
+      setVoiceMessage(transcript ? `Searching for “${transcript}”.` : 'No words were recognized. Try again.');
+    };
+    recognition.onerror = (event) => setVoiceMessage(event.error === 'not-allowed' ? 'Microphone permission was denied.' : 'Voice search could not start. Type a place name instead.');
+    recognition.onend = () => { if (speechRecognition.current === recognition) speechRecognition.current = null; };
+    try { recognition.start(); } catch { setVoiceMessage('Voice search is already active.'); }
+  };
+
+  const handleReportSubmit = (event) => {
+    event.preventDefault();
+    const report = { category: reportCategory, details: reportDetails.trim(), submittedAt: new Date().toISOString() };
+    try {
+      const existing = JSON.parse(localStorage.getItem('saferoute.incident_reports') || '[]');
+      localStorage.setItem('saferoute.incident_reports', JSON.stringify([...existing, report]));
+      setReportSubmitted(true);
+      setReportDetails('');
+    } catch {
+      setVoiceMessage('This browser could not save the report locally.');
+    }
   };
 
   const handleSuggestionSubmit = (e) => {
@@ -318,6 +367,7 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
 
       {/* Main Content */}
       <main className="haven-content">
+        <div className="haven-search-tools">
         {/* Search bar */}
         <div className="haven-search-bar">
           <span className="material-symbols-outlined haven-search-icon">search</span>
@@ -334,13 +384,20 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
             </button>
           )}
           <div className="haven-search-actions">
-            <button className="haven-search-btn" aria-label="Voice search">
+            <button type="button" className="haven-search-btn" onClick={handleVoiceSearch} aria-label="Voice search" title="Search using your microphone">
               <span className="material-symbols-outlined">mic</span>
             </button>
-            <button className="haven-search-btn" aria-label="Filters">
+            <button type="button" className={`haven-search-btn ${filtersOpen ? 'selected' : ''}`} onClick={() => setFiltersOpen((open) => !open)} aria-label="Toggle filters" aria-expanded={filtersOpen} title="More filters">
               <span className="material-symbols-outlined">tune</span>
             </button>
           </div>
+        </div>
+        {voiceMessage && <p className="haven-search-status" role="status">{voiceMessage}</p>}
+        {filtersOpen && <div className="haven-extra-filters">
+          <label><input type="checkbox" checked={nearbyOnly} onChange={(event) => setNearbyOnly(event.target.checked)} /> Within 500 m</label>
+          <label><input type="checkbox" checked={savedOnly} onChange={(event) => setSavedOnly(event.target.checked)} /> Bookmarked only</label>
+          <label className="haven-extra-sort">Sort by <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}><option value="distance">Distance</option><option value="name">Name</option></select></label>
+        </div>}
         </div>
 
         {/* Category Filter Pills */}
@@ -415,11 +472,11 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
             zoomControl={false}
           >
             <TileLayer
-              attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            <MapController center={mapCenter} userLocation={userLocation} />
+            <MapController center={mapCenter} />
 
             {/* Dynamic 500m Safety Perimeter around user */}
             {userLocation.latitude != null && userLocation.longitude != null && (
@@ -540,14 +597,16 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
 
         {/* Safe Haven Cards List */}
         <div className="haven-cards-list">
-          {displayedHavens.length === 0 ? (
+          {loading ? (
+            <p className="haven-empty-desc" role="status">Loading safe havens…</p>
+          ) : displayedHavens.length === 0 ? (
             <div className="haven-empty-state">
               <span className="material-symbols-outlined haven-empty-icon">search_off</span>
               <h3 className="haven-empty-title">No Safe Havens Found</h3>
               <p className="haven-empty-desc">
-                {searchQuery
+                {loadError || (searchQuery
                   ? `No havens matching "${searchQuery}". Try a different keyword.`
-                  : "No havens found for the selected category."}
+                  : "No havens found for the selected category.")}
               </p>
               <button
                 className="haven-btn-reset"
@@ -782,7 +841,7 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
           <span className="material-symbols-outlined">explore</span>
           <span>Home</span>
         </button>
-        <button className="haven-nav-item active">
+        <button type="button" className="haven-nav-item active" aria-current="page" onClick={() => { setSelectedCategory('all'); setSearchQuery(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
             storefront
           </span>
@@ -790,7 +849,7 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
         </button>
         <button
           className="haven-nav-item"
-          onClick={() => alert("Report Incident: Offline safe reporting logged locally.")}
+          onClick={() => { setReportSubmitted(false); setShowReportModal(true); }}
         >
           <span className="material-symbols-outlined">campaign</span>
           <span>Report</span>
@@ -803,6 +862,18 @@ export default function SafeHavens({ onNavigate, onSelectHavenAsDestination }) {
           <span>Guardian</span>
         </button>
       </nav>
+      {showReportModal && <div className="haven-modal-backdrop" onClick={() => setShowReportModal(false)}>
+        <div className="haven-modal-content" role="dialog" aria-modal="true" aria-labelledby="haven-report-title" onClick={(event) => event.stopPropagation()}>
+          <div className="haven-modal-head"><h3 id="haven-report-title">Report an issue</h3><button type="button" className="haven-modal-close" onClick={() => setShowReportModal(false)} aria-label="Close report"><span className="material-symbols-outlined">close</span></button></div>
+          {reportSubmitted ? <div className="haven-submit-success" role="status">Report saved on this device. It was not sent to emergency services.</div> : <form onSubmit={handleReportSubmit}>
+            <p className="haven-report-note">This prototype stores the report only in this browser. For emergencies, contact local emergency services.</p>
+            <div className="haven-form-group"><label htmlFor="haven-report-category">Issue type</label><select id="haven-report-category" className="haven-form-select" value={reportCategory} onChange={(event) => setReportCategory(event.target.value)}><option value="map-data">Incorrect map information</option><option value="closed-place">Place appears closed</option><option value="accessibility">Accessibility issue</option><option value="other">Other</option></select></div>
+            <div className="haven-form-group"><label htmlFor="haven-report-details">Details</label><textarea id="haven-report-details" className="haven-form-textarea" required maxLength={500} value={reportDetails} onChange={(event) => setReportDetails(event.target.value)} placeholder="Describe the issue" /></div>
+            <div className="haven-form-actions"><button type="button" className="haven-btn-cancel" onClick={() => setShowReportModal(false)}>Cancel</button><button type="submit" className="haven-btn-submit">Save report</button></div>
+          </form>}
+          {reportSubmitted && <button type="button" className="haven-btn-submit" onClick={() => setShowReportModal(false)}>Done</button>}
+        </div>
+      </div>}
     </div>
   );
 }

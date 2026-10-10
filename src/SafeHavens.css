@@ -1133,3 +1133,58 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+.haven-search-btn.selected { color: #57f1db; background: #57f1db18; }
+.haven-search-status { margin: -7px 7px -5px; color: #57f1db; font-size: 11px; line-height: 1.4; }
+.haven-extra-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 14px; border: 1px solid #ffffff12; border-radius: 12px; color: #c1ccdc; background: #131b2e; font-size: 11px; }
+.haven-extra-filters label { display: inline-flex; align-items: center; gap: 6px; }
+.haven-extra-filters input { accent-color: #57f1db; }
+.haven-extra-sort select { padding: 5px 8px; border: 1px solid #ffffff19; border-radius: 7px; color: #dae2fd; background: #0b1326; }
+.haven-report-note { margin: 0 0 12px; color: #bacac5; font-size: 11px; line-height: 1.5; }
+.haven-search-tools { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.haven-screen button:focus-visible, .haven-screen select:focus-visible, .haven-screen input:focus-visible, .haven-screen textarea:focus-visible { outline: 2px solid #57f1db; outline-offset: 2px; }
+
+/* Tablet: use the wider viewport without shrinking touch controls. */
+@media (min-width: 600px) and (max-width: 899px) {
+  .haven-screen { width: min(calc(100% - 40px), 820px); max-width: none; min-height: calc(100dvh - 40px); margin: 20px auto; border: 1px solid #252d40; border-radius: 18px; overflow: clip; }
+  .haven-header { padding: 14px 22px; }
+  .haven-content { padding: 20px 22px calc(96px + env(safe-area-inset-bottom, 0px)); gap: 16px; }
+  .haven-map-card { height: clamp(340px, 48vw, 460px); }
+  .haven-search-tools { width: 100%; }
+  .haven-filter-scroll { flex-wrap: wrap; }
+  .haven-filter-pill { min-height: 42px; }
+  .haven-bottom-nav { left: 50%; right: auto; bottom: 20px; width: min(calc(100% - 40px), 820px); max-width: none; transform: translateX(-50%); border: 1px solid #ffffff12; border-radius: 0 0 18px 18px; }
+}
+
+/* Laptop and desktop: put the map beside the searchable results. */
+@media (min-width: 900px) {
+  .haven-screen { width: min(calc(100% - 64px), 1220px); max-width: none; min-height: calc(100dvh - 48px); margin: 24px auto; border: 1px solid #252d40; border-radius: 20px; overflow: visible; box-shadow: 0 18px 60px #0006; }
+  .haven-header { min-height: 72px; padding: 14px 28px; border-radius: 20px 20px 0 0; }
+  .haven-brand { font-size: 20px; }
+  .haven-content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(340px, .9fr); align-content: start; align-items: start; gap: 16px 22px; padding: 22px 28px 130px; }
+  .haven-search-tools, .haven-filter-scroll, .haven-gps-banner, .haven-suggest-card { grid-column: 1 / -1; }
+  .haven-gps-banner { grid-row: 3; }
+  .haven-map-card { grid-column: 1; grid-row: 4 / span 3; height: min(62vh, 660px); min-height: 440px; }
+  .haven-verification-card { grid-column: 1; grid-row: 7; }
+  .haven-section-head { grid-column: 2; grid-row: 4; min-width: 0; }
+  .haven-cards-list { grid-column: 2; grid-row: 5 / span 3; min-width: 0; max-height: min(64vh, 690px); overflow: auto; padding: 2px 4px 8px 0; scrollbar-width: thin; }
+  .haven-filter-scroll { flex-wrap: wrap; overflow: visible; }
+  .haven-filter-pill { min-height: 42px; }
+  .haven-card { padding: 15px; }
+  .haven-bottom-nav { left: 50%; right: auto; bottom: 0; width: min(calc(100% - 64px), 1220px); max-width: none; transform: translateX(-50%); border: 1px solid #ffffff12; border-radius: 16px 16px 0 0; }
+  .haven-nav-item { min-height: 48px; font-size: 11px; }
+}
+
+@media (max-width: 420px) {
+  .haven-header { padding-inline: 12px; }
+  .haven-content { padding-inline: 12px; gap: 12px; }
+  .haven-map-card { height: clamp(250px, 78vw, 340px); border-radius: 14px; }
+  .haven-map-badge-bottom { left: 8px; bottom: 8px; max-width: calc(100% - 64px); padding: 5px 8px; font-size: 9px; }
+  .haven-map-controls { right: 8px; bottom: 8px; }
+  .haven-filter-pill { padding: 8px 11px; font-size: 11px; }
+  .haven-gps-banner { align-items: flex-start; flex-direction: column; }
+  .haven-suggest-card { align-items: flex-start; flex-direction: column; }
+  .haven-suggest-btn { align-self: stretch; }
+  .haven-bottom-nav { padding-inline: 6px; }
+  .haven-nav-item { font-size: 9px; }
+}
