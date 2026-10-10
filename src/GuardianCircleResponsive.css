@@ -1,0 +1,34 @@
+.guardian-header h1 {
+  min-width: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.guardian-content > h2 {
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.guardian-section-title {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.guardian-section-title h3 {
+  min-width: 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.guardian-section-title .selected-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.guardian-section-title small {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+

@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
-import { Play, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Play } from 'lucide-react';
 import safetyVideoUrl from '../safety.mp4';
 import './SafetuAudio.css';
 
-export default function VirtualGuardian() {
+export default function VirtualGuardian({ onBack }) {
   const videoRef = useRef(null);
   const [started, setStarted] = useState(false);
   const [playbackError, setPlaybackError] = useState('');
@@ -15,12 +15,11 @@ export default function VirtualGuardian() {
   }
 
   return <main className="safetu-page">
+    <button className="safetu-back" type="button" onClick={onBack} aria-label="Go back">
+      <ArrowLeft aria-hidden="true" />
+      <span>Back</span>
+    </button>
     <div className="safetu-shell">
-      <header className="safetu-brand">
-        <span className="safetu-brand-mark"><ShieldCheck aria-hidden="true" /></span>
-        <span className="safetu-brand-name">Safetu<span>Audio</span></span>
-      </header>
-
       <section className={`safetu-card${started ? ' safetu-card--playing' : ''}`} aria-labelledby="safetu-title">
         {!started && <div className="safetu-intro">
           <span className="safetu-eyebrow">A MOMENT FOR YOUR JOURNEY</span>

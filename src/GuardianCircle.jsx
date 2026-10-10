@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './GuardianCircle.css';
+import './GuardianCircleResponsive.css';
 
 const DEFAULT_GUARDIANS = [
   { id: 'mom', name: 'Maa (Mom)', relationship: 'Mom', phone: '', online: true, primary: true, selected: true, avatar: '👩🏽' },
