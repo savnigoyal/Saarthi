@@ -23,7 +23,8 @@
 .haven-header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  /* Keep the persistent navigation above Leaflet map panes and controls. */
+  z-index: 800;
   background: rgba(11, 19, 38, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
