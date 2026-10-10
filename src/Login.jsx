@@ -1,6 +1,6 @@
 ﻿import { useState, useId, useReducer } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2, AlertCircle } from "lucide-react";
-import { createAccount, getFirebaseAuthErrorMessage, sendPasswordReset, signIn } from "./firebaseAuth";
+import { createAccount, getFirebaseAuthErrorMessage, signIn } from "./firebaseAuth";
 import "./Login.css";
 
 function MapPreview() {
@@ -82,16 +82,14 @@ function validatePassword(v) {
 export default function Login({ onSignIn }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [mode, setMode] = useState("login");
-  const [notice, setNotice] = useState("");
   const emailId = useId();
   const passwordId = useId();
 
   const emailError   = state.touched.email    ? validateEmail(state.email)       : null;
-  const passwordError = mode !== "reset" && state.touched.password ? validatePassword(state.password) : null;
+  const passwordError = state.touched.password ? validatePassword(state.password) : null;
 
   function switchAuthMode() {
     setMode(mode === "login" ? "signup" : "login");
-    setNotice("");
     dispatch({ type: "SUBMIT_SUCCESS" });
     dispatch({ type: "SET_FIELD", field: "error", value: null });
   }
@@ -100,15 +98,10 @@ export default function Login({ onSignIn }) {
     e.preventDefault();
     dispatch({ type: "TOUCH", field: "email" });
     dispatch({ type: "TOUCH", field: "password" });
-    if (validateEmail(state.email) || (mode !== "reset" && validatePassword(state.password))) return;
+    if (validateEmail(state.email) || validatePassword(state.password)) return;
     dispatch({ type: "SUBMIT_START" });
-    setNotice("");
     try {
-      if (mode === "reset") {
-        await sendPasswordReset(state.email);
-        dispatch({ type: "SUBMIT_SUCCESS" });
-        setNotice("Password reset email sent. Check your inbox.");
-      } else if (mode === "signup") {
+      if (mode === "signup") {
         await createAccount(state.email, state.password);
         dispatch({ type: "SUBMIT_SUCCESS" });
         onSignIn?.();
@@ -152,8 +145,8 @@ export default function Login({ onSignIn }) {
           </div>
 
           <div className="lp-form-head">
-            <h2 className="lp-form-head__title">{mode === "signup" ? "Create your account" : mode === "reset" ? "Reset your password" : "Welcome back"}</h2>
-            <p className="lp-form-head__sub">{mode === "signup" ? "Create an account to get started." : mode === "reset" ? "We’ll email you a password reset link." : "Sign in to continue to your account."}</p>
+            <h2 className="lp-form-head__title">{mode === "signup" ? "Create your account" : "Welcome back"}</h2>
+            <p className="lp-form-head__sub">{mode === "signup" ? "Create an account to get started." : "Sign in to continue to your account."}</p>
           </div>
 
           <form className="lp-form" onSubmit={handleSubmit} noValidate>
@@ -181,14 +174,8 @@ export default function Login({ onSignIn }) {
               )}
             </div>
 
-            {mode !== "reset" && <div className="lp-field">
-              <div className="lp-label-row">
-                <label htmlFor={passwordId} className="lp-label">Password</label>
-                <button type="button" className="lp-forgot" tabIndex={0}
-                  onClick={() => { setMode("reset"); setNotice(""); dispatch({ type: "SET_FIELD", field: "error", value: null }); }}>
-                  Forgot password?
-                </button>
-              </div>
+            <div className="lp-field">
+              <label htmlFor={passwordId} className="lp-label">Password</label>
               <div className="lp-input-wrap">
                 <input
                   id={passwordId}
@@ -220,7 +207,7 @@ export default function Login({ onSignIn }) {
                   {passwordError}
                 </span>
               )}
-            </div>}
+            </div>
 
             {state.error && (
               <div className="lp-error-banner" role="alert">
@@ -228,34 +215,16 @@ export default function Login({ onSignIn }) {
                 <span>{state.error}</span>
               </div>
             )}
-            {notice && <div className="lp-success-banner" role="status">{notice}</div>}
-
             <button type="submit" className="lp-submit" disabled={state.submitting} aria-busy={state.submitting}>
               {state.submitting
-                ? <><Loader2 size={15} className="lp-spin" aria-hidden="true"/><span>{mode === "signup" ? "Creating account..." : mode === "reset" ? "Sending link..." : "Signing in..."}</span></>
-                : <><span>{mode === "signup" ? "Create account" : mode === "reset" ? "Send reset link" : "Sign in"}</span><ArrowRight size={15} aria-hidden="true"/></>
+                ? <><Loader2 size={15} className="lp-spin" aria-hidden="true"/><span>{mode === "signup" ? "Creating account..." : "Signing in..."}</span></>
+                : <><span>{mode === "signup" ? "Create account" : "Sign in"}</span><ArrowRight size={15} aria-hidden="true"/></>
               }
             </button>
           </form>
 
-          <div className="lp-divider" aria-hidden="true">
-            <span/><span className="lp-divider__label">or</span><span/>
-          </div>
-
-          <button type="button" className="lp-google" disabled aria-disabled="true"
-            title="Connect Google OAuth to enable this option.">
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            <span>Continue with Google</span>
-            <span className="lp-google__badge">Not configured</span>
-          </button>
-
           <p className="lp-signup-link">
-            {mode === "reset" ? "Remembered your password? " : mode === "signup" ? "Already have an account? " : "New here? "}
+            {mode === "signup" ? "Already have an account? " : "New here? "}
             <button type="button" className="lp-link" onClick={switchAuthMode}>
               {mode === "login" ? "Create an account" : "Sign in"}
             </button>

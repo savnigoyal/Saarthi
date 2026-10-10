@@ -232,12 +232,6 @@
   user-select: none;
 }
 
-.lp-label-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 /* ── Input ────────────────────────────────────────────────── */
 .lp-input {
   width: 100%;
@@ -325,31 +319,6 @@
   font-weight: 500;
 }
 
-/* ── Forgot link ──────────────────────────────────────────── */
-.lp-forgot {
-  font-size: 12px;
-  font-weight: 500;
-  color: #247C73;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font-family: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: color 0.12s;
-}
-
-.lp-forgot:hover {
-  color: #1a5c55;
-}
-
-.lp-forgot:focus-visible {
-  outline: 2px solid #247C73;
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
 /* ── Error banner ─────────────────────────────────────────── */
 .lp-error-banner {
   display: flex;
@@ -369,16 +338,6 @@
   flex-shrink: 0;
   margin-top: 1px;
   color: #C0392B;
-}
-
-.lp-success-banner {
-  padding: 11px 13px;
-  background: #eaf7f2;
-  border: 1px solid #b8dfd0;
-  border-radius: 6px;
-  color: #185c49;
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 /* ── Submit button ────────────────────────────────────────── */
@@ -423,64 +382,6 @@
 @keyframes lp-rotate {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
-}
-
-/* ── Divider ──────────────────────────────────────────────── */
-.lp-divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 24px 0 0;
-}
-
-.lp-divider > span:first-child,
-.lp-divider > span:last-child {
-  flex: 1;
-  height: 1px;
-  background: #D9E2DE;
-}
-
-.lp-divider__label {
-  font-size: 12px;
-  color: #8FAAA5;
-  font-weight: 500;
-  white-space: nowrap;
-  flex: 0;
-}
-
-/* ── Google button ────────────────────────────────────────── */
-.lp-google {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  height: 42px;
-  background: #fff;
-  border: 1px solid #C8D4CF;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  color: #52636A;
-  cursor: not-allowed;
-  opacity: 0.6;
-  margin-top: 12px;
-  position: relative;
-}
-
-.lp-google__badge {
-  position: absolute;
-  right: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #A0B0AB;
-  background: #F0F4F2;
-  padding: 2px 6px;
-  border-radius: 3px;
-  border: 1px solid #D9E2DE;
 }
 
 /* ── Sign-up link ─────────────────────────────────────────── */
@@ -574,7 +475,6 @@
   .lp-input,
   .lp-submit,
   .lp-input__reveal,
-  .lp-forgot,
   .lp-link {
     transition: none;
   }

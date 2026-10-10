@@ -1,6 +1,5 @@
 import {
   createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { firebaseAuth } from './firebase';
@@ -10,9 +9,6 @@ export const createAccount = (email, password) =>
 
 export const signIn = (email, password) =>
   signInWithEmailAndPassword(firebaseAuth, email, password);
-
-export const sendPasswordReset = (email) =>
-  sendPasswordResetEmail(firebaseAuth, email);
 
 export function getFirebaseAuthErrorMessage(error) {
   switch (error?.code) {
