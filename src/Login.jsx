@@ -1,6 +1,6 @@
 ﻿import { useState, useId, useReducer } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2, AlertCircle } from "lucide-react";
-import { resetPassword, signInWithPassword, signUp } from "./supabaseAuth";
+import { createAccount, getFirebaseAuthErrorMessage, sendPasswordReset, signIn } from "./firebaseAuth";
 import "./Login.css";
 
 function MapPreview() {
@@ -79,7 +79,7 @@ function validatePassword(v) {
   return null;
 }
 
-export default function Login({ onNavigate, onSignIn }) {
+export default function Login({ onSignIn }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [mode, setMode] = useState("login");
   const [notice, setNotice] = useState("");
@@ -105,21 +105,20 @@ export default function Login({ onNavigate, onSignIn }) {
     setNotice("");
     try {
       if (mode === "reset") {
-        await resetPassword(state.email);
+        await sendPasswordReset(state.email);
         dispatch({ type: "SUBMIT_SUCCESS" });
-        setNotice("If an account exists for this email, a password reset link has been sent.");
+        setNotice("Password reset email sent. Check your inbox.");
       } else if (mode === "signup") {
-        const result = await signUp(state.email, state.password);
+        await createAccount(state.email, state.password);
         dispatch({ type: "SUBMIT_SUCCESS" });
-        if (result.session) onSignIn?.();
-        else setNotice("Account created. Check your email to confirm your address, then sign in.");
+        onSignIn?.();
       } else {
-        await signInWithPassword(state.email, state.password);
+        await signIn(state.email, state.password);
         dispatch({ type: "SUBMIT_SUCCESS" });
         onSignIn?.();
       }
     } catch (error) {
-      dispatch({ type: "SUBMIT_ERROR", message: error.message || "Unable to connect to Supabase." });
+      dispatch({ type: "SUBMIT_ERROR", message: getFirebaseAuthErrorMessage(error) });
     }
   }
 

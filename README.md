@@ -10,11 +10,11 @@ Run `npm install`, then `npm run dev` to start the local development server.
 
 Run `npm run build`, then serve the generated `dist/` directory on a static host.
 
-## Supabase authentication
+## Firebase Authentication
 
-Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from your Supabase project's API settings. Restart the Vite server after changing environment variables. The login screen supports email and password sign-in, account creation, and password reset. Email confirmation and reset links use the redirect URL configured in Supabase Auth.
+Firebase email/password sign-in, account creation, and password reset use the web app configuration in `.env.local`. Copy `.env.example` and fill in the Firebase web app values from **Project settings → General → Your apps**. Enable **Email/Password** under **Authentication → Sign-in method** in the Firebase Console. Restart Vite after changing environment variables.
 
-Only use the project's publishable/anon key in this browser app. Never put the service role key in a `VITE_` variable or commit `.env.local`.
+Firebase web configuration is public client configuration. Access to Firebase data must still be protected with Firebase Security Rules; do not add Admin SDK credentials to this client app.
 
 ## Google Maps Embed setup
 

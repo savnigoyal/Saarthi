@@ -114,10 +114,7 @@ export default function App() {
 
   if (currentTab === 'login') {
     return (
-      <Login
-        onNavigate={(tab) => setCurrentTab(tab === 'signup' ? 'login' : tab)}
-        onSignIn={() => setCurrentTab('havens')}
-      />
+      <Login onSignIn={() => setCurrentTab('havens')} />
     );
   }
 
