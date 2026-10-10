@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { authPersistenceReady, firebaseAuth } from './firebase';
 import { getAlternativeRoutes } from './mockService';
 import SafeGuardianCircle from './SafeGuardianCircle';
@@ -110,9 +110,13 @@ export default function App() {
 
     authPersistenceReady.catch(() => undefined).then(() => {
       if (cancelled) return;
-      unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-        setCurrentTab((tab) => user ? (tab === 'login' ? 'havens' : tab) : 'login');
-        setAuthReady(true);
+      // Require a fresh sign-in each time the page is loaded or reloaded.
+      signOut(firebaseAuth).finally(() => {
+        if (cancelled) return;
+        unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+          setCurrentTab((tab) => user ? (tab === 'login' ? 'havens' : tab) : 'login');
+          setAuthReady(true);
+        });
       });
     });
 
