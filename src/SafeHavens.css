@@ -918,7 +918,8 @@
 .haven-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  /* Leaflet panes and controls use z-index values up to 700. Keep dialogs above them. */
+  z-index: 1000;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(6px);
   display: flex;
